@@ -1,34 +1,34 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter, usePathname } from "next/navigation"
-import { getAccessToken } from "@/lib/auth/token"
+import { getAccessToken } from "@/lib/auth/token";
+import { usePathname, useRouter } from "next/navigation";
+import * as React from "react";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [isChecking, setIsChecking] = React.useState(true)
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false)
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isChecking, setIsChecking] = React.useState(true);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
     const checkAuth = () => {
-      const token = getAccessToken()
-      
+      const token = getAccessToken();
+
       if (!token) {
         // No token, redirect to login
         if (pathname?.startsWith("/dashboard")) {
-          router.push("/")
+          router.push("/");
         }
-        setIsAuthenticated(false)
+        setIsAuthenticated(false);
       } else {
-        setIsAuthenticated(true)
+        setIsAuthenticated(true);
       }
-      
-      setIsChecking(false)
-    }
 
-    checkAuth()
-  }, [router, pathname])
+      setIsChecking(false);
+    };
+
+    checkAuth();
+  }, [router, pathname]);
 
   // Show loading state while checking
   if (isChecking) {
@@ -39,14 +39,13 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           <p className="text-sm text-muted-foreground">در حال بررسی...</p>
         </div>
       </div>
-    )
+    );
   }
 
   // If not authenticated and on dashboard, don't render children (redirect will happen)
   if (!isAuthenticated && pathname?.startsWith("/dashboard")) {
-    return null
+    return null;
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
-

@@ -1,15 +1,19 @@
-"use client"
+"use client";
 
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
-import { Separator } from "@/components/ui/separator"
-import { AuthGuard } from "@/components/auth-guard"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { AppSidebar } from "@/components/app-sidebar";
+import { AuthGuard } from "@/components/auth-guard";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <AuthGuard>
@@ -30,6 +34,5 @@ export default function DashboardLayout({
         </SidebarInset>
       </SidebarProvider>
     </AuthGuard>
-  )
+  );
 }
-

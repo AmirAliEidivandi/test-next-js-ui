@@ -46,12 +46,12 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { profileApi } from "@/lib/api/profile";
+import type { GetProfileInfoResponse } from "@/lib/api/types";
 import { clearTokens } from "@/lib/auth/token";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { profileApi } from "@/lib/api/profile";
-import type { GetProfileInfoResponse } from "@/lib/api/types";
 
 type MenuItem = {
   title: string;
@@ -180,8 +180,9 @@ const menuItems: MenuItem[] = [
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [profile, setProfile] =
-    React.useState<GetProfileInfoResponse | null>(null);
+  const [profile, setProfile] = React.useState<GetProfileInfoResponse | null>(
+    null
+  );
 
   React.useEffect(() => {
     profileApi

@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Eye, EyeOff, Smartphone, Lock } from "lucide-react"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Lock, Smartphone } from "lucide-react";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -24,11 +24,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { authApi } from "@/lib/api/auth"
-import type { ApiError } from "@/lib/api/types"
-import { setTokens } from "@/lib/auth/token"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { authApi } from "@/lib/api/auth";
+import type { ApiError } from "@/lib/api/types";
+import { setTokens } from "@/lib/auth/token";
 
 const loginFormSchema = z.object({
   mobile: z
@@ -39,14 +39,14 @@ const loginFormSchema = z.object({
     .string()
     .min(1, "رمز عبور الزامی است")
     .min(6, "رمز عبور باید حداقل 6 کاراکتر باشد"),
-})
+});
 
-type LoginFormValues = z.infer<typeof loginFormSchema>
+type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export function LoginForm() {
-  const router = useRouter()
-  const [showPassword, setShowPassword] = React.useState(false)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const router = useRouter();
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -54,16 +54,16 @@ export function LoginForm() {
       mobile: "",
       password: "",
     },
-  })
+  });
 
   async function onSubmit(data: LoginFormValues) {
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
       const response = await authApi.login({
         mobile: data.mobile,
         password: data.password,
-      })
+      });
 
       // Store tokens
       setTokens({
@@ -72,33 +72,33 @@ export function LoginForm() {
         token_type: response.token_type,
         exp: response.exp,
         refresh_exp: response.refresh_exp,
-      })
+      });
 
       toast.success("ورود با موفقیت انجام شد", {
         description: "به حساب کاربری خود خوش آمدید",
-      })
+      });
 
       // Redirect to dashboard
-      router.push("/dashboard")
+      router.push("/dashboard");
     } catch (error) {
-      const apiError = error as ApiError
-      
-      let errorMessage = "خطایی در ورود رخ داد. لطفا دوباره تلاش کنید."
-      
+      const apiError = error as ApiError;
+
+      let errorMessage = "خطایی در ورود رخ داد. لطفا دوباره تلاش کنید.";
+
       if (apiError.message) {
-        errorMessage = apiError.message
+        errorMessage = apiError.message;
       } else if (apiError.errors) {
-        const firstError = Object.values(apiError.errors)[0]
+        const firstError = Object.values(apiError.errors)[0];
         if (firstError && firstError.length > 0) {
-          errorMessage = firstError[0]
+          errorMessage = firstError[0];
         }
       }
 
       toast.error("خطا در ورود", {
         description: errorMessage,
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -107,7 +107,7 @@ export function LoginForm() {
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      
+
       <Card className="w-full max-w-md shadow-lg border-border/50 backdrop-blur-sm bg-card/95">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-3xl font-bold tracking-tight">
@@ -144,7 +144,7 @@ export function LoginForm() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="password"
@@ -202,6 +202,5 @@ export function LoginForm() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-
