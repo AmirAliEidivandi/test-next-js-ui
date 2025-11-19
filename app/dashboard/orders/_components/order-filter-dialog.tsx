@@ -39,7 +39,7 @@ type OrderFilterDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   salesLines: CapillarySalesLinesResponse | null;
-  sellers: GetSellersResponse[];
+  sellers: GetSellersResponse[] | undefined;
   customers: GetCustomersResponse | null;
   filters: QueryOrder;
   onApply: (filters: QueryOrder) => void;
@@ -208,6 +208,7 @@ export function OrderFilterDialog({
   );
 
   const customerOptions = customers?.data ?? [];
+  const sellerOptions = sellers ?? [];
   const selectedCustomer = customerOptions.find(
     (customer) => customer.id === localFilters.customer_id
   );
@@ -329,7 +330,7 @@ export function OrderFilterDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">همه</SelectItem>
-                  {sellers.map((seller) => (
+                  {sellerOptions.map((seller) => (
                     <SelectItem key={seller.id} value={seller.id}>
                       {seller.profile.first_name} {seller.profile.last_name}
                     </SelectItem>

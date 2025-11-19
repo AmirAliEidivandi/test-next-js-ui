@@ -5,6 +5,9 @@ import { faIR } from "date-fns-jalali/locale/fa-IR";
 import { BarChart3, CalendarIcon, Filter, X } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
+import { ChartSkeleton } from "@/components/ui/chart-skeleton";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -229,12 +232,62 @@ export default function DashboardPage() {
       value: item.total_price,
     })) || [];
 
+  // Show skeleton while loading initial data
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">در حال بارگذاری...</p>
+      <div className="space-y-4 p-6">
+        {/* Welcome Section Skeleton */}
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+
+        {/* Filters Skeleton */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader className="pb-3">
+              <Skeleton className="h-6 w-24" />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex flex-wrap items-end gap-3">
+                <Skeleton className="h-10 w-[240px]" />
+                <Skeleton className="h-10 w-[240px]" />
+                <Skeleton className="h-10 w-[240px]" />
+                <Skeleton className="h-10 w-24" />
+                <Skeleton className="h-10 w-32" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <Skeleton className="h-6 w-24" />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex gap-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-8 w-20" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Chart and Table Section */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <ChartSkeleton />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-32" />
+              <TableSkeleton rows={5} columns={4} />
+            </div>
+          </div>
+        </div>
+
+        {/* Products Sales Table */}
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-40" />
+          <TableSkeleton rows={6} columns={5} />
         </div>
       </div>
     );
@@ -328,7 +381,7 @@ export default function DashboardPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">همه فروشندگان</SelectItem>
-                {sellers.map((seller) => (
+                {(sellers ?? []).map((seller) => (
                   <SelectItem key={seller.id} value={seller.id}>
                     {seller.profile.first_name} {seller.profile.last_name}
                   </SelectItem>
@@ -391,7 +444,14 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            {chartDataFormatted.length > 0 ? (
+            {filtering || periodLoading ? (
+              <div className="h-[250px] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <p className="text-xs text-muted-foreground">در حال بارگذاری...</p>
+                </div>
+              </div>
+            ) : chartDataFormatted.length > 0 ? (
               <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={chartDataFormatted}>
@@ -426,7 +486,11 @@ export default function DashboardPage() {
             <CardTitle className="text-lg">محصولات برتر</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            {topProducts && topProducts.data.length > 0 ? (
+            {filtering || periodLoading ? (
+              <div className="rounded-md border">
+                <TableSkeleton rows={5} columns={4} />
+              </div>
+            ) : topProducts && topProducts.data.length > 0 ? (
               <div className="rounded-md border max-h-[320px] overflow-y-auto">
                 <Table>
                   <TableHeader>
@@ -482,47 +546,51 @@ export default function DashboardPage() {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">آمار فروش بر اساس دسته بندی</CardTitle>
         </CardHeader>
-        <CardContent className="pt-0">
-          {productsSales && productsSales.data.length > 0 ? (
-            <div className="rounded-md border max-h-[400px] overflow-y-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-right text-xs">نوع</TableHead>
-                    <TableHead className="text-center text-xs">تعداد</TableHead>
-                    <TableHead className="text-center text-xs">وزن</TableHead>
-                    <TableHead className="text-left text-xs">قیمت</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {productsSales.data.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium text-right text-sm">
-                        {item.title}
-                      </TableCell>
-                      <TableCell className="text-center text-sm">
-                        {item.count.toLocaleString("fa-IR")}
-                      </TableCell>
-                      <TableCell className="text-center text-sm">
-                        {item.net_weight.toLocaleString("fa-IR", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell className="text-left font-medium text-sm">
-                        {item.total_price.toLocaleString("fa-IR")} ریال
-                      </TableCell>
+          <CardContent className="pt-0">
+            {filtering || periodLoading ? (
+              <div className="rounded-md border">
+                <TableSkeleton rows={6} columns={4} />
+              </div>
+            ) : productsSales && productsSales.data.length > 0 ? (
+              <div className="rounded-md border max-h-[400px] overflow-y-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-right text-xs">نوع</TableHead>
+                      <TableHead className="text-center text-xs">تعداد</TableHead>
+                      <TableHead className="text-center text-xs">وزن</TableHead>
+                      <TableHead className="text-left text-xs">قیمت</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
-              داده‌ای برای نمایش وجود ندارد
-            </div>
-          )}
-        </CardContent>
+                  </TableHeader>
+                  <TableBody>
+                    {productsSales.data.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium text-right text-sm">
+                          {item.title}
+                        </TableCell>
+                        <TableCell className="text-center text-sm">
+                          {item.count.toLocaleString("fa-IR")}
+                        </TableCell>
+                        <TableCell className="text-center text-sm">
+                          {item.net_weight.toLocaleString("fa-IR", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </TableCell>
+                        <TableCell className="text-left font-medium text-sm">
+                          {item.total_price.toLocaleString("fa-IR")} ریال
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
+                داده‌ای برای نمایش وجود ندارد
+              </div>
+            )}
+          </CardContent>
       </Card>
     </div>
   );

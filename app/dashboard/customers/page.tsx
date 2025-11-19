@@ -34,6 +34,8 @@ import { useCustomers, useCapillarySalesLines } from "@/lib/hooks/api/use-custom
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import type { QueryCustomer } from "@/lib/api/types";
 import { CustomerFilterDialog } from "./_components/customer-filter-dialog";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Category labels
 const categoryLabels: Record<string, string> = {
@@ -114,10 +116,24 @@ export default function CustomersPage() {
 
   if (isLoading && !customers) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">در حال بارگذاری...</p>
+      <div className="space-y-4 p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <Skeleton className="h-10 w-24" />
+        </div>
+
+        <TableSkeleton rows={10} columns={8} />
+
+        {/* Pagination Skeleton */}
+        <div className="flex items-center justify-center gap-2">
+          <Skeleton className="h-10 w-10" />
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 w-10" />
+          ))}
+          <Skeleton className="h-10 w-10" />
         </div>
       </div>
     );

@@ -36,6 +36,8 @@ import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useCustomers } from "@/lib/hooks/api/use-customers";
 import type { QueryOrder } from "@/lib/api/types";
 import { OrderFilterDialog } from "./_components/order-filter-dialog";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const stepLabels: Record<string, string> = {
   SELLER: "فروشنده",

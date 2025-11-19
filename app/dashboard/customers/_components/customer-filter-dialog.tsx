@@ -40,7 +40,7 @@ type CustomerFilterDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   salesLines: CapillarySalesLinesResponse | null;
-  sellers: GetSellersResponse[];
+  sellers: GetSellersResponse[] | undefined;
   filters: QueryCustomer;
   onApply: (filters: QueryCustomer) => void;
   onClear: () => void;
@@ -302,7 +302,7 @@ export function CustomerFilterDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">همه</SelectItem>
-                  {sellers.map((seller) => (
+                  {(sellers ?? []).map((seller) => (
                     <SelectItem key={seller.id} value={seller.id}>
                       {seller.profile.first_name} {seller.profile.last_name}
                     </SelectItem>
