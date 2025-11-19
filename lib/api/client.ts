@@ -1,35 +1,25 @@
-import { getAccessToken, getTokenType } from "@/lib/auth/token";
 import type { ApiError } from "./types";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://meat-core-dev.darkube.app";
+// Use Next.js API proxy instead of direct backend calls
+// This ensures tokens are never exposed to the client
+const PROXY_BASE_URL = "/api/proxy";
 
 class ApiClient {
-  private baseURL: string;
-
-  constructor(baseURL: string = API_BASE_URL) {
-    this.baseURL = baseURL;
-  }
-
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
-
-    const token = getAccessToken();
-    const tokenType = getTokenType() || "Bearer";
-    const authHeader = token ? `${tokenType} ${token}` : undefined;
+    // Remove leading slash from endpoint if present
+    const cleanEndpoint = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+    const url = `${PROXY_BASE_URL}/${cleanEndpoint}`;
 
     const config: RequestInit = {
       ...options,
       headers: {
         "Content-Type": "application/json",
-        version: "1",
-        branch: "ISFAHAN",
-        ...(authHeader && { Authorization: authHeader }),
         ...options.headers,
       },
+      credentials: "same-origin", // Include cookies in request
     };
 
     try {

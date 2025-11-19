@@ -26,9 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { authApi } from "@/lib/api/auth";
 import type { ApiError } from "@/lib/api/types";
-import { setTokens } from "@/lib/auth/token";
 
 const loginFormSchema = z.object({
   mobile: z
@@ -60,19 +58,42 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const response = await authApi.login({
-        mobile: data.mobile,
-        password: data.password,
+      // Use Next.js API route for login (tokens stored in httpOnly cookies)
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          mobile: data.mobile,
+          password: data.password,
+        }),
       });
 
-      // Store tokens
-      setTokens({
-        access_token: response.access_token,
-        refresh_token: response.refresh_token,
-        token_type: response.token_type,
-        exp: response.exp,
-        refresh_exp: response.refresh_exp,
-      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: response.statusText || "خطایی رخ داد",
+        }));
+
+        const apiError = errorData as ApiError;
+
+        let errorMessage = "خطایی در ورود رخ داد. لطفا دوباره تلاش کنید.";
+
+        if (apiError.message) {
+          errorMessage = apiError.message;
+        } else if (apiError.errors) {
+          const firstError = Object.values(apiError.errors)[0];
+          if (firstError && firstError.length > 0) {
+            errorMessage = firstError[0];
+          }
+        }
+
+        toast.error("خطا در ورود", {
+          description: errorMessage,
+        });
+        return;
+      }
 
       toast.success("ورود با موفقیت انجام شد", {
         description: "به حساب کاربری خود خوش آمدید",

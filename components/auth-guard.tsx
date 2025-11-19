@@ -1,6 +1,5 @@
 "use client";
 
-import { getAccessToken } from "@/lib/auth/token";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 
@@ -11,20 +10,35 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
-    const checkAuth = () => {
-      const token = getAccessToken();
+    const checkAuth = async () => {
+      try {
+        // Check authentication via server-side API
+        const response = await fetch("/api/auth/check", {
+          credentials: "same-origin",
+        });
 
-      if (!token) {
-        // No token, redirect to login
+        if (response.ok) {
+          const data = await response.json();
+          setIsAuthenticated(data.authenticated);
+
+          if (!data.authenticated && pathname?.startsWith("/dashboard")) {
+            router.push("/");
+          }
+        } else {
+          setIsAuthenticated(false);
+          if (pathname?.startsWith("/dashboard")) {
+            router.push("/");
+          }
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        setIsAuthenticated(false);
         if (pathname?.startsWith("/dashboard")) {
           router.push("/");
         }
-        setIsAuthenticated(false);
-      } else {
-        setIsAuthenticated(true);
+      } finally {
+        setIsChecking(false);
       }
-
-      setIsChecking(false);
     };
 
     checkAuth();

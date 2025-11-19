@@ -11,6 +11,20 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RefreshTokenRequest {
+  refresh_token: string;
+}
+
+export interface RefreshTokenResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+  exp: number;
+  refresh_expires_in: number;
+  refresh_exp: number;
+}
+
 export interface LoginResponse {
   access_token: string;
   refresh_token: string;
@@ -19,6 +33,20 @@ export interface LoginResponse {
   exp: number;
   refresh_expires_in: number;
   refresh_exp: number;
+}
+
+export interface VerifyTokenRequest {
+  token: string;
+}
+
+export interface VerifyTokenResponse {
+  valid: boolean;
+  message: string;
+  current_time?: number;
+  error?: string;
+  exp?: number;
+  time_remaining?: number;
+  username?: string;
 }
 
 // file response

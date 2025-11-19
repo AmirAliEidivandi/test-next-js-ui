@@ -48,7 +48,6 @@ import {
 } from "@/components/ui/sidebar";
 import { profileApi } from "@/lib/api/profile";
 import type { GetProfileInfoResponse } from "@/lib/api/types";
-import { clearTokens } from "@/lib/auth/token";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -193,10 +192,19 @@ export function AppSidebar() {
       });
   }, []);
 
-  const handleLogout = () => {
-    clearTokens();
-    toast.success("خروج با موفقیت انجام شد");
-    router.push("/");
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "same-origin",
+      });
+      toast.success("خروج با موفقیت انجام شد");
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if logout fails, redirect to login
+      router.push("/");
+    }
   };
 
   return (

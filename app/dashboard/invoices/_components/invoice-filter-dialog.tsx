@@ -37,8 +37,8 @@ import { cn } from "@/lib/utils";
 type InvoiceFilterDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  customers: GetCustomersResponse | null;
-  sellers: GetSellersResponse[];
+  customers: GetCustomersResponse | null | undefined;
+  sellers: GetSellersResponse[] | undefined;
   filters: QueryInvoice;
   onApply: (filters: QueryInvoice) => void;
   onClear: () => void;
@@ -149,6 +149,7 @@ export function InvoiceFilterDialog({
   );
 
   const customerOptions = customers?.data ?? [];
+  const sellerOptions = sellers ?? [];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -247,7 +248,7 @@ export function InvoiceFilterDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">همه</SelectItem>
-                  {sellers.map((seller) => (
+                  {sellerOptions.map((seller) => (
                     <SelectItem key={seller.id} value={seller.id}>
                       {seller.profile.first_name} {seller.profile.last_name}
                     </SelectItem>
