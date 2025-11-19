@@ -4,6 +4,7 @@ import type {
   GetCustomerReportResponse,
   GetCustomersByDebtResponse,
   GetCustomersResponse,
+  QueryCapillarySalesLine,
   QueryCustomer,
 } from "./types";
 
@@ -136,7 +137,22 @@ export const customersApi = {
   /**
    * Get list of capillary sales lines
    */
-  async getCapillarySalesLines(): Promise<CapillarySalesLinesResponse> {
-    return apiClient.get<CapillarySalesLinesResponse>("/capillary-sales-lines");
+  async getCapillarySalesLines(
+    query?: QueryCapillarySalesLine
+  ): Promise<CapillarySalesLinesResponse> {
+    const params = new URLSearchParams();
+
+    if (query?.page) {
+      params.append("page", query.page.toString());
+    }
+    if (query?.["page-size"]) {
+      params.append("page-size", query["page-size"].toString());
+    }
+
+    const endpoint = `/capillary-sales-lines${
+      params.toString() ? `?${params.toString()}` : ""
+    }`;
+
+    return apiClient.get<CapillarySalesLinesResponse>(endpoint);
   },
 };

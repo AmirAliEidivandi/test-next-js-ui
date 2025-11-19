@@ -3,8 +3,8 @@
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
 import { BellPlus, Edit, Eye, Trash2 } from "lucide-react";
-import * as React from "react";
 import { useRouter } from "next/navigation";
+import * as React from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CustomerFilterDialog } from "../_components/customer-filter-dialog";
 import { customersApi } from "@/lib/api/customers";
 import { employeesApi } from "@/lib/api/employees";
 import type {
@@ -39,6 +38,7 @@ import type {
   GetSellersResponse,
   QueryCustomer,
 } from "@/lib/api/types";
+import { CustomerFilterDialog } from "../_components/customer-filter-dialog";
 
 const categoryLabels: Record<string, string> = {
   RESTAURANT: "رستوران",
@@ -89,8 +89,9 @@ const toPersianDigits = (str: string): string => {
 export default function CustomersReportPage() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(true);
-  const [report, setReport] =
-    React.useState<GetCustomerReportResponse | null>(null);
+  const [report, setReport] = React.useState<GetCustomerReportResponse | null>(
+    null
+  );
   const [salesLines, setSalesLines] =
     React.useState<CapillarySalesLinesResponse | null>(null);
   const [sellers, setSellers] = React.useState<GetSellersResponse[]>([]);
@@ -228,7 +229,9 @@ export default function CustomersReportPage() {
                           })
                         : "-"}
                     </TableCell>
-                    <TableCell className="font-medium">{customer.title}</TableCell>
+                    <TableCell className="font-medium">
+                      {customer.title}
+                    </TableCell>
                     <TableCell>
                       {typeLabels[customer.type] || customer.type}
                     </TableCell>
@@ -247,7 +250,9 @@ export default function CustomersReportPage() {
                     </TableCell>
                     <TableCell>
                       {lastOrder
-                        ? lastOrder.total_amount.toLocaleString("fa-IR")
+                        ? `${lastOrder.total_amount.toLocaleString(
+                            "fa-IR"
+                          )} ریال`
                         : "-"}
                     </TableCell>
                     <TableCell>
@@ -439,4 +444,3 @@ export default function CustomersReportPage() {
     </div>
   );
 }
-

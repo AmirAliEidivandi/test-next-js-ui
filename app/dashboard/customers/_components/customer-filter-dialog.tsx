@@ -34,6 +34,8 @@ import type {
 } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
+const pageSizeOptions = [10, 20, 30, 40, 50, 100];
+
 type CustomerFilterDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -111,6 +113,30 @@ export function CustomerFilterDialog({
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">تعداد در هر صفحه</label>
+              <Select
+                value={(localFilters["page-size"] || 20).toString()}
+                onValueChange={(value) =>
+                  setLocalFilters({
+                    ...localFilters,
+                    "page-size": parseInt(value, 10),
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="انتخاب تعداد" />
+                </SelectTrigger>
+                <SelectContent>
+                  {pageSizeOptions.map((size) => (
+                    <SelectItem key={size} value={size.toString()}>
+                      {size.toLocaleString("fa-IR")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Title */}
             <div className="space-y-2">
               <label className="text-sm font-medium">عنوان</label>

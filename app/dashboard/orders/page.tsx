@@ -30,16 +30,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { customersApi } from "@/lib/api/customers";
-import { employeesApi } from "@/lib/api/employees";
-import { ordersApi } from "@/lib/api/orders";
-import type {
-  CapillarySalesLinesResponse,
-  GetCustomersResponse,
-  GetOrdersResponse,
-  GetSellersResponse,
-  QueryOrder,
-} from "@/lib/api/types";
+import { useOrders } from "@/lib/hooks/api/use-orders";
+import { useCapillarySalesLines } from "@/lib/hooks/api/use-customers";
+import { useSellers } from "@/lib/hooks/api/use-employees";
+import { useCustomers } from "@/lib/hooks/api/use-customers";
+import type { QueryOrder } from "@/lib/api/types";
 import { OrderFilterDialog } from "./_components/order-filter-dialog";
 
 const stepLabels: Record<string, string> = {
@@ -85,14 +80,6 @@ const toPersianDigits = (str: string): string => {
 
 export default function OrdersPage() {
   const router = useRouter();
-  const [loading, setLoading] = React.useState(true);
-  const [orders, setOrders] = React.useState<GetOrdersResponse | null>(null);
-  const [salesLines, setSalesLines] =
-    React.useState<CapillarySalesLinesResponse | null>(null);
-  const [sellers, setSellers] = React.useState<GetSellersResponse[]>([]);
-  const [customers, setCustomers] = React.useState<GetCustomersResponse | null>(
-    null
-  );
   const [currentPage, setCurrentPage] = React.useState(1);
   const [filters, setFilters] = React.useState<QueryOrder>({
     "page-size": 20,
@@ -100,48 +87,28 @@ export default function OrdersPage() {
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
 
   const pageSize = filters["page-size"] || 20;
+
+  // Load filter data
+  const { data: salesLines } = useCapillarySalesLines();
+  const { data: sellers } = useSellers();
+  const { data: customers } = useCustomers({ "page-size": 200 });
+
+  // Load orders
+  const query: QueryOrder = {
+    ...filters,
+    page: currentPage,
+  };
+  const { data: orders, isLoading, error } = useOrders(query);
+
   const totalPages = orders ? Math.ceil(orders.count / pageSize) : 0;
 
   React.useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  React.useEffect(() => {
-    loadOrders();
-  }, [currentPage, filters]);
-
-  const loadInitialData = async () => {
-    try {
-      const [salesLinesData, sellersData, customersData] = await Promise.all([
-        customersApi.getCapillarySalesLines(),
-        employeesApi.getSellers(),
-        customersApi.getCustomers({ "page-size": 200 }),
-      ]);
-      setSalesLines(salesLinesData);
-      setSellers(sellersData);
-      setCustomers(customersData);
-    } catch (error) {
-      toast.error("خطا در بارگذاری اطلاعات اولیه");
-    }
-  };
-
-  const loadOrders = async () => {
-    try {
-      setLoading(true);
-      const query: QueryOrder = {
-        ...filters,
-        page: currentPage,
-      };
-      const data = await ordersApi.getOrders(query);
-      setOrders(data);
-    } catch (error) {
+    if (error) {
       toast.error("خطا در بارگذاری لیست سفارشات", {
         description: "لطفا دوباره تلاش کنید",
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [error]);
 
   const handleFilterApply = (newFilters: QueryOrder) => {
     setFilters(newFilters);
@@ -159,7 +126,7 @@ export default function OrdersPage() {
     router.push(`/dashboard/orders/${orderId}`);
   };
 
-  if (loading && !orders) {
+  if (isLoading && !orders) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">

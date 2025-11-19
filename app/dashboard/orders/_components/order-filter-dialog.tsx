@@ -75,6 +75,8 @@ const booleanOptions = [
   { value: "false", label: "خیر" },
 ];
 
+const pageSizeOptions = [10, 20, 30, 40, 50, 100];
+
 export function OrderFilterDialog({
   open,
   onOpenChange,
@@ -227,19 +229,26 @@ export function OrderFilterDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">تعداد در هر صفحه</label>
-              <Input
-                type="number"
-                min={1}
-                value={localFilters["page-size"] || 20}
-                onChange={(e) =>
+              <Select
+                value={(localFilters["page-size"] || 20).toString()}
+                onValueChange={(value) =>
                   setLocalFilters({
                     ...localFilters,
-                    "page-size": e.target.value
-                      ? parseInt(e.target.value, 10)
-                      : 20,
+                    "page-size": parseInt(value, 10),
                   })
                 }
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="انتخاب تعداد" />
+                </SelectTrigger>
+                <SelectContent>
+                  {pageSizeOptions.map((size) => (
+                    <SelectItem key={size} value={size.toString()}>
+                      {size.toLocaleString("fa-IR")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

@@ -30,14 +30,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { customersApi } from "@/lib/api/customers";
-import { employeesApi } from "@/lib/api/employees";
-import type {
-  CapillarySalesLinesResponse,
-  GetCustomersResponse,
-  GetSellersResponse,
-  QueryCustomer,
-} from "@/lib/api/types";
+import { useCustomers, useCapillarySalesLines } from "@/lib/hooks/api/use-customers";
+import { useSellers } from "@/lib/hooks/api/use-employees";
+import type { QueryCustomer } from "@/lib/api/types";
 import { CustomerFilterDialog } from "./_components/customer-filter-dialog";
 
 // Category labels
@@ -72,13 +67,6 @@ const toPersianDigits = (str: string): string => {
 
 export default function CustomersPage() {
   const router = useRouter();
-  const [loading, setLoading] = React.useState(true);
-  const [customers, setCustomers] = React.useState<GetCustomersResponse | null>(
-    null
-  );
-  const [salesLines, setSalesLines] =
-    React.useState<CapillarySalesLinesResponse | null>(null);
-  const [sellers, setSellers] = React.useState<GetSellersResponse[]>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [filters, setFilters] = React.useState<QueryCustomer>({
     "page-size": 20,
@@ -86,48 +74,27 @@ export default function CustomersPage() {
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
 
   const pageSize = filters["page-size"] || 20;
+
+  // Load filter data
+  const { data: salesLines } = useCapillarySalesLines();
+  const { data: sellers } = useSellers();
+
+  // Load customers
+  const query: QueryCustomer = {
+    ...filters,
+    page: currentPage,
+  };
+  const { data: customers, isLoading, error } = useCustomers(query);
+
   const totalPages = customers ? Math.ceil(customers.count / pageSize) : 0;
 
-  // Load initial data
   React.useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  // Load customers when page or filters change
-  React.useEffect(() => {
-    loadCustomers();
-  }, [currentPage, filters]);
-
-  const loadInitialData = async () => {
-    try {
-      const [salesLinesData, sellersData] = await Promise.all([
-        customersApi.getCapillarySalesLines(),
-        employeesApi.getSellers(),
-      ]);
-      setSalesLines(salesLinesData);
-      setSellers(sellersData);
-    } catch (error) {
-      toast.error("خطا در بارگذاری اطلاعات اولیه");
-    }
-  };
-
-  const loadCustomers = async () => {
-    try {
-      setLoading(true);
-      const query: QueryCustomer = {
-        ...filters,
-        page: currentPage,
-      };
-      const data = await customersApi.getCustomers(query);
-      setCustomers(data);
-    } catch (error) {
+    if (error) {
       toast.error("خطا در بارگذاری لیست مشتریان", {
         description: "لطفا دوباره تلاش کنید",
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [error]);
 
   const handleFilterApply = (newFilters: QueryCustomer) => {
     setFilters(newFilters);
@@ -145,7 +112,7 @@ export default function CustomersPage() {
     router.push(`/dashboard/customers/${customerId}`);
   };
 
-  if (loading && !customers) {
+  if (isLoading && !customers) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">

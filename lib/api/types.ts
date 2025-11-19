@@ -328,6 +328,11 @@ export interface CapillarySalesLinesResponse {
   }[];
 }
 
+export interface QueryCapillarySalesLine {
+  page?: number;
+  "page-size"?: number;
+}
+
 export interface GetCustomersByDebtResponse {
   count: number;
   metadata: {
@@ -518,5 +523,147 @@ export interface GetOrdersResponse {
     bought: boolean;
     representative_name: string;
     day_index: number; // 0 - 1 - 2 - 3 - 4 - 5 - 6: شنبه - یکشنبه - دوشنبه - سه شنبه - چهارشنبه - پنجشنبه - جمعه
+  }[];
+}
+
+export interface QueryInvoice {
+  page?: number;
+  "page-size"?: number;
+  code?: number;
+  customer_id?: string;
+  seller_id?: string;
+  order_id?: string;
+  due_date_min?: Date;
+  due_date_max?: Date;
+  from?: Date;
+  to?: Date;
+  amount_min?: number;
+  amount_max?: number;
+  payment_status?: "PAID" | "NOT_PAID" | "PARTIALLY_PAID";
+  type?: "PURCHASE" | "RETURN_FROM_PURCHASE" | "SELL";
+}
+
+export interface GetInvoicesResponse {
+  count: number;
+  data: {
+    id: string;
+    amount: number;
+    code: number;
+    created_at: Date;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+    };
+    date: Date; // تاریخ
+    due_date: Date; // تاریخ سررسید
+    order?: {
+      id: string;
+      code: number;
+    };
+    payment_status: "PAID" | "NOT_PAID" | "PARTIALLY_PAID"; // پرداخت شده - پرداخت نشده - پرداخت جزئی
+    type: "PURCHASE" | "RETURN_FROM_PURCHASE" | "SELL"; // خرید - بازگشت از خرید - فروش
+  }[];
+}
+
+export interface QueryCustomerRequest {
+  page?: number;
+  "page-size"?: number;
+  payment_method?: "CASH" | "ONLINE" | "WALLET";
+  status?: "PENDING" | "CONVERTED_TO_ORDER" | "APPROVED" | "REJECTED";
+  customer_id?: string;
+  code?: number;
+  created_at_min?: Date;
+  created_at_max?: Date;
+}
+
+export interface GetCustomerRequestsResponse {
+  count: number;
+  data: {
+    id: string;
+    code: number;
+    created_at: Date;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+    };
+    payment_method: "CASH" | "ONLINE" | "WALLET"; // نوع پرداخت: نقدی - آنلاین - کیف پول
+    products_count: number; // تعداد محصولات
+    representative_name: string; // نماینده
+    total_items: number; // تعداد محصولات
+    total_price?: number; // قیمت کل
+    status: "PENDING" | "CONVERTED_TO_ORDER" | "APPROVED" | "REJECTED"; // وضعیت: درحال انتظار - تبدیل به سفارش - تایید شده - رد شده
+  }[];
+}
+
+// get branches info response
+export type GetBranchesInfoResponse = Array<{
+  id: string;
+  name: string;
+  locked: boolean;
+  warehouses: Array<{
+    id: string;
+    name: string;
+  }>;
+}>;
+
+// get warehouses response
+export type GetWarehousesResponse = Array<{
+  id: string;
+  name: string;
+  location: {
+    type: string;
+    coordinates: [number, number];
+  };
+  address: string;
+  manager_id: string;
+  branch_id: string;
+  deleted: false;
+  are_prices_updated: boolean;
+  code: number;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  branch: {
+    id: string;
+    name: string;
+    locked: false;
+    address: string;
+    manager_id: string;
+    are_prices_updated: boolean;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+  };
+  manager?: {
+    profile: {
+      id: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+}>;
+
+export interface GetVisitorsResponse {
+  count: number;
+  data: {
+    id: string;
+    locked: boolean;
+    roles: string[];
+    profile_id: string;
+    kid: string;
+    capillary_sales_lines: {
+      id: string;
+      locked: boolean;
+      title: string;
+      line_number: number;
+    }[];
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+    };
   }[];
 }

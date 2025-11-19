@@ -1,5 +1,9 @@
 import { apiClient } from "./client";
-import type { GetEmployeeInfoResponse, GetSellersResponse } from "./types";
+import type {
+  GetEmployeeInfoResponse,
+  GetSellersResponse,
+  GetVisitorsResponse,
+} from "./types";
 
 export const employeesApi = {
   /**
@@ -16,5 +20,12 @@ export const employeesApi = {
    */
   async getSellers(): Promise<GetSellersResponse[]> {
     return apiClient.get<GetSellersResponse[]>("/employees/sellers");
+  },
+
+  /**
+   * Get list of visitors
+   */
+  async getVisitors(): Promise<GetVisitorsResponse> {
+    return apiClient.get<GetVisitorsResponse>("/employees/visitors");
   },
 };
