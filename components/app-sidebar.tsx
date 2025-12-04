@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   Package,
+  RotateCcw,
   ShoppingCart,
   Store,
   Ticket,
@@ -103,6 +104,11 @@ const menuItems: MenuItem[] = [
     title: "درخواست های مشتریان",
     icon: MessageSquare,
     href: "/dashboard/customer-requests",
+  },
+  {
+    title: "درخواست های مرجوعی",
+    icon: RotateCcw,
+    href: "/dashboard/return-requests",
   },
   {
     title: "دسته بندی ها",

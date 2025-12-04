@@ -30,14 +30,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useOrders } from "@/lib/hooks/api/use-orders";
-import { useCapillarySalesLines } from "@/lib/hooks/api/use-customers";
-import { useSellers } from "@/lib/hooks/api/use-employees";
-import { useCustomers } from "@/lib/hooks/api/use-customers";
 import type { QueryOrder } from "@/lib/api/types";
+import {
+  useCapillarySalesLines,
+  useCustomers,
+} from "@/lib/hooks/api/use-customers";
+import { useSellers } from "@/lib/hooks/api/use-employees";
+import { useOrders } from "@/lib/hooks/api/use-orders";
 import { OrderFilterDialog } from "./_components/order-filter-dialog";
-import { TableSkeleton } from "@/components/ui/table-skeleton";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const stepLabels: Record<string, string> = {
   SELLER: "فروشنده",
@@ -213,22 +213,22 @@ export default function OrdersPage() {
                           })
                         : "-"}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium max-w-[220px] truncate">
                       {order.customer?.title || "-"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="max-w-[180px] truncate">
                       {order.seller?.profile
                         ? `${order.seller.profile.first_name} ${order.seller.profile.last_name}`
                         : "-"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="max-w-[160px] truncate">
                       {stepLabels[order.step] || order.step}
                     </TableCell>
                     <TableCell>
                       {paymentStatusLabels[order.payment_status] ||
                         order.payment_status}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="max-w-[180px] truncate">
                       {deliveryMethodLabels[order.delivery_method] ||
                         order.delivery_method}
                     </TableCell>
@@ -246,7 +246,9 @@ export default function OrdersPage() {
                           )
                         : "-"}
                     </TableCell>
-                    <TableCell>{order.representative_name || "-"}</TableCell>
+                    <TableCell className="max-w-[160px] truncate">
+                      {order.representative_name || "-"}
+                    </TableCell>
                     <TableCell>{order.bought ? "بله" : "خیر"}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1 justify-center">

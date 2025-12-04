@@ -59,12 +59,21 @@ async function handleProxyRequest(
     const searchParams = request.nextUrl.searchParams.toString();
     const targetUrl = `${API_BASE_URL}/${path}${searchParams ? `?${searchParams}` : ""}`;
 
+    // Check if request is multipart/form-data (file upload)
+    const contentType = request.headers.get("content-type") || "";
+    const isMultipartFormData = contentType.includes("multipart/form-data");
+
     // Prepare headers
     const headers: HeadersInit = {
-      "Content-Type": "application/json",
       version: "1",
       branch: "ISFAHAN",
     };
+
+    // Only set Content-Type for non-multipart requests
+    // For multipart/form-data, browser sets it automatically with boundary
+    if (!isMultipartFormData) {
+      headers["Content-Type"] = "application/json";
+    }
 
     // Add authorization header if token exists
     if (accessToken) {
@@ -72,14 +81,20 @@ async function handleProxyRequest(
     }
 
     // Get request body for POST, PUT, PATCH
-    let body: string | undefined;
+    let body: string | FormData | undefined;
     if (["POST", "PUT", "PATCH"].includes(method)) {
-      try {
-        const requestBody = await request.json();
-        body = JSON.stringify(requestBody);
-      } catch {
-        // No body or invalid JSON, continue without body
-        body = undefined;
+      if (isMultipartFormData) {
+        // For file uploads, use FormData directly
+        body = await request.formData();
+      } else {
+        // For JSON requests, parse and stringify
+        try {
+          const requestBody = await request.json();
+          body = JSON.stringify(requestBody);
+        } catch {
+          // No body or invalid JSON, continue without body
+          body = undefined;
+        }
       }
     }
 

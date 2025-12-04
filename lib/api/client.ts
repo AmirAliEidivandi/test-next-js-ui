@@ -10,7 +10,9 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     // Remove leading slash from endpoint if present
-    const cleanEndpoint = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint;
+    const cleanEndpoint = endpoint.startsWith("/")
+      ? endpoint.slice(1)
+      : endpoint;
     const url = `${PROXY_BASE_URL}/${cleanEndpoint}`;
 
     const config: RequestInit = {
@@ -80,6 +82,18 @@ class ApiClient {
     return this.request<T>(endpoint, {
       ...options,
       method: "PUT",
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async patch<T>(
+    endpoint: string,
+    data?: unknown,
+    options?: RequestInit
+  ): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,
     });
   }

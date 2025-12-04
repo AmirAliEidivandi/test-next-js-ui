@@ -161,6 +161,32 @@ export interface GetEmployeeInfoResponse {
   locked: boolean; // locked
 }
 
+export type GetEmployeesResponse = Array<{
+  id: string;
+  profile_id: string;
+  kid: string;
+  deleted: boolean;
+  locked: boolean;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date;
+  roles: string[];
+  profile: {
+    id: string;
+    kid: string;
+    first_name: string;
+    last_name: string;
+  };
+  capillary_sales_lines: {
+    id: string;
+    title: string;
+  }[];
+  branches: {
+    id: string;
+    name: string;
+  }[];
+}>;
+
 // get profile's role
 export type ProfileRoles = string[]; // name of the keycloak roles: ['VIEW_EMPLOYEE', 'VIEW_STATS', 'CREATE_CUSTOMER']
 
@@ -694,4 +720,296 @@ export interface GetVisitorsResponse {
       last_name: string;
     };
   }[];
+}
+
+export interface QueryTicket {
+  page?: number;
+  "page-size"?: number;
+  customer_id?: string;
+  person_id?: string;
+  creator_person_id?: string;
+  employee_id?: string;
+  assigned_to_id?: string;
+  status?:
+    | "OPEN" // باز
+    | "CLOSED" // بسته
+    | "REOPENED" // باز شده
+    | "RESOLVED" // حل شده
+    | "WAITING_CUSTOMER" // در انتظار مشتری
+    | "WAITING_SUPPORT"; // در انتظار پشتیبان
+  priority?: "LOW" | "NORMAL" | "HIGH" | "URGENT"; // کم - متوسط - زیاد - بسیار زیاد
+  sort_by?: "last_message" | "updated_at"; // آخرین پیام - آخرین به روز رسانی
+  sort_order?: "asc" | "desc"; // صعودی - نزولی
+  created_at_min?: Date; // تاریخ ایجاد از
+  created_at_max?: Date; // تاریخ ایجاد تا
+  deleted?: boolean; // حذف شده
+  search?: string; // جستجو
+  last_sender_type?: "CUSTOMER_PERSON" | "EMPLOYEE"; // نوع آخرین ارسال کننده: مشتری - پشتیبان
+}
+
+export interface GetTicketsResponse {
+  count: number;
+  page: number;
+  page_size: number;
+  data: {
+    id: string;
+    subject: string;
+    status: string;
+    priority: string;
+    created_at: string;
+    updated_at: string;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+      type: string;
+      category: string;
+      capillary_sales_line: {
+        id: string;
+        line_number: number;
+        title: string;
+      };
+    };
+    creator_person: {
+      id: string;
+      profile: {
+        first_name: string;
+        last_name: string;
+      };
+    } | null;
+    assigned_to: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    } | null;
+    messages_count: number;
+    last_message: {
+      id: string;
+      sender_type: string;
+      message: string;
+      created_at: string;
+      sender_profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    } | null;
+  }[];
+}
+
+export interface GetTicketResponse {
+  id: string;
+  subject: string;
+  status: string;
+  priority: string;
+  closed_at: Date | null;
+  deleted: boolean;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  customer: {
+    id: string;
+    title: string;
+    code: number;
+    type: "PERSONAL" | "CORPORATE";
+    category:
+      | "RESTAURANT"
+      | "HOTEL"
+      | "CHAIN_STORE"
+      | "GOVERNMENTAL"
+      | "FAST_FOOD"
+      | "CHARITY"
+      | "BUTCHER"
+      | "WHOLESALER"
+      | "FELLOW"
+      | "CATERING"
+      | "KEBAB"
+      | "DISTRIBUTOR"
+      | "HOSPITAL"
+      | "FACTORY";
+    capillary_sales_line: {
+      id: string;
+      line_number: number;
+      title: string;
+    };
+  };
+  creator_person: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+    };
+  } | null;
+  assigned_to: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+    };
+  } | null;
+  attachments: FileSummary[];
+}
+
+export interface GetTicketMessagesResponse {
+  count: number;
+  data: {
+    id: string;
+    ticket_id: string;
+    sender_type: "CUSTOMER_PERSON" | "EMPLOYEE";
+    employee_id: string | null;
+    person_id: string | null;
+    message: string;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+    employee: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    } | null;
+    person: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    } | null;
+    attachments: FileSummary[];
+  }[];
+}
+
+export interface CreateTicketRequest {
+  subject: string;
+  priority: string;
+  customer_id: string;
+  message: string;
+  attachment_ids: string[];
+}
+
+export interface ReplyTicketRequest {
+  message: string;
+  attachment_ids: string[];
+}
+
+export interface CreateTicketResponse {
+  ticket: {
+    id: string;
+    subject: string;
+    priority: string;
+    message: string;
+    status:
+      | "OPEN"
+      | "CLOSED"
+      | "REOPENED"
+      | "RESOLVED"
+      | "WAITING_CUSTOMER"
+      | "WAITING_SUPPORT";
+    creator_person_id: string;
+    customer_id: string;
+    created_at: Date;
+  };
+  message: {
+    sender_type: "CUSTOMER_PERSON" | "EMPLOYEE";
+    message: string;
+    created_at: Date;
+  };
+  attachments: FileSummary[];
+}
+
+export interface ReplyTicketResponse {
+  ticket: {
+    id: string;
+    status:
+      | "OPEN"
+      | "CLOSED"
+      | "REOPENED"
+      | "RESOLVED"
+      | "WAITING_CUSTOMER"
+      | "WAITING_SUPPORT";
+  };
+  message: {
+    id: string;
+    sender_type: "CUSTOMER_PERSON" | "EMPLOYEE";
+    employee?: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    } | null;
+    person?: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    } | null;
+    message: string;
+    created_at: Date;
+    attachments: FileSummary[];
+  };
+}
+
+export interface UploadFileResponse {
+  id: string;
+  name: string;
+  type: string;
+  size: string;
+  url: string;
+  thumbnail_url: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface QueryReturnRequest {
+  page?: number;
+  "page-size"?: number;
+  customer_id?: string;
+}
+
+export interface GetReturnRequestsResponse {
+  data: {
+    id: string;
+    status: "PENDING" | "APPROVED" | "REJECTED" | "RECEIVED";
+    reason: "NOT_GOOD";
+    order: {
+      id: string;
+      code: number;
+      address: string;
+    };
+    request: {
+      id: string;
+      code: number;
+      address: string;
+      status: "PENDING" | "CONVERTED_TO_ORDER" | "APPROVED" | "REJECTED";
+    };
+    created_at: Date;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+    };
+    representative_name: string;
+    return_items_count: number;
+  }[];
+  count: number;
 }

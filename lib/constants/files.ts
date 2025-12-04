@@ -1,0 +1,2 @@
+// File related constants
+export const FILE_BASE_URL = process.env.NEXT_PUBLIC_FILE_BASE_URL;

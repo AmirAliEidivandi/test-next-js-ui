@@ -1,6 +1,7 @@
 import { apiClient } from "./client";
 import type {
   GetEmployeeInfoResponse,
+  GetEmployeesResponse,
   GetSellersResponse,
   GetVisitorsResponse,
 } from "./types";
@@ -27,5 +28,12 @@ export const employeesApi = {
    */
   async getVisitors(): Promise<GetVisitorsResponse> {
     return apiClient.get<GetVisitorsResponse>("/employees/visitors");
+  },
+
+  /**
+   * Get list of employees
+   */
+  async getEmployees(): Promise<GetEmployeesResponse> {
+    return apiClient.get<GetEmployeesResponse>("/employees");
   },
 };

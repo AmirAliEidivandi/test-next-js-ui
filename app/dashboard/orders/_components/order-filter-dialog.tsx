@@ -38,9 +38,9 @@ import { cn } from "@/lib/utils";
 type OrderFilterDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  salesLines: CapillarySalesLinesResponse | null;
+  salesLines: CapillarySalesLinesResponse | undefined;
   sellers: GetSellersResponse[] | undefined;
-  customers: GetCustomersResponse | null;
+  customers: GetCustomersResponse | undefined;
   filters: QueryOrder;
   onApply: (filters: QueryOrder) => void;
   onClear: () => void;
