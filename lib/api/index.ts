@@ -1,5 +1,6 @@
 // Export all API related modules
 export * from "./auth";
+export * from "./checks";
 export * from "./client";
 export * from "./customer-requests";
 export * from "./customers";

@@ -1013,3 +1013,295 @@ export interface GetReturnRequestsResponse {
   }[];
   count: number;
 }
+
+export interface QueryReminder {
+  page?: number;
+  "page-size"?: number;
+  from?: Date;
+  to?: Date;
+  employee_id?: string;
+  seen?: boolean;
+}
+
+export interface GetRemindersResponse {
+  count: number;
+  data: {
+    id: string;
+    message: string;
+    date: Date;
+    seen: boolean;
+    representative_name: string;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+    };
+    created_at: Date;
+  }[];
+}
+
+export interface UpdateReminderRequest {
+  seen?: boolean;
+}
+
+export interface UpdateReminderResponse {
+  id: string;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  branch_id: string;
+  customer_id: string;
+  order_id: string | null;
+  date: Date;
+  employee_id: string;
+  message: string;
+  hour: string | null;
+  seen: boolean | null;
+}
+
+export interface GetReminderResponse {
+  id: string;
+  date: Date;
+  seen: boolean;
+  message: string;
+  representative_name: string;
+  customer: {
+    id: string;
+    title: string;
+    code: number;
+    type: "PERSONAL" | "CORPORATE";
+    category:
+      | "RESTAURANT"
+      | "HOTEL"
+      | "CHAIN_STORE"
+      | "GOVERNMENTAL"
+      | "FAST_FOOD"
+      | "CHARITY"
+      | "BUTCHER"
+      | "WHOLESALER"
+      | "FELLOW"
+      | "CATERING"
+      | "KEBAB"
+      | "DISTRIBUTOR"
+      | "HOSPITAL"
+      | "FACTORY";
+  };
+  created_at: Date;
+  order: {
+    id: string;
+    code: number;
+    address: string;
+    step:
+      | "SELLER"
+      | "SALES_MANAGER"
+      | "PROCESSING"
+      | "INVENTORY"
+      | "ACCOUNTING"
+      | "CARGO"
+      | "PARTIALLY_DELIVERED"
+      | "DELIVERED"
+      | "RETURNED"
+      | "PARTIALLY_RETURNED";
+    created_at: Date;
+  } | null;
+}
+
+export interface QueryFollowUp {
+  page?: number;
+  "page-size"?: number;
+  employee_id?: string;
+  capillary_sales_line_id?: string;
+}
+
+export interface GetFollowUpsResponse {
+  count: number;
+  data: {
+    id: string;
+    description: string;
+    attempt: number;
+    result: "CUSTOMER" | "NOT_CUSTOMER" | "REQUIRES_FOLLOW_UP" | "NOT_ANSWERED";
+    employee: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    };
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+    };
+    created_at: Date;
+    updated_at: Date;
+  }[];
+}
+
+export enum CheckStatusEnum {
+  RECEIVED_BY_ACCOUNTING = "RECEIVED_BY_ACCOUNTING", // دریافت چک توسط حسابداری
+  DELIVERED_TO_PROCUREMENT = "DELIVERED_TO_PROCUREMENT", // تحویل به کارپرداز
+  DELIVERED_TO_BANK = "DELIVERED_TO_BANK", // تحویل به بانک
+  CLEARED = "CLEARED", // پاس شده
+  RETURNED = "RETURNED", // برگشت خورده
+}
+
+export enum BankEnum {
+  // بانک‌های دولتی
+  Sepah = "SEPAH",
+  Melli = "MELLI",
+  Tejarat = "TEJARAT",
+  Refah = "REFAH",
+  Maskan = "MASKAN",
+  Keshavarzi = "KESHAVARZI",
+  Sanat_Va_Madan = "SANAT_VA_MADAN",
+  Post_Bank = "POST_BANK",
+  // بانک‌های خصوصی
+  Mellat = "MELLAT",
+  Saderat = "SADERAT",
+  Parsian = "PARSIAN",
+  Pasargad = "PASARGAD",
+  Saman = "SAMAN",
+  Eghtesad_Novin = "EGHTESAD_NOVIN",
+  Dey = "DEY",
+  Karafarin = "KARAFARIN",
+  Sina = "SINA",
+  Sarmayeh = "SARMAYEH",
+  Shahr = "SHAHR",
+  Ayandeh = "AYANDEH",
+  Ansar = "ANSAR",
+  Gardeshgari = "GARDESHGARI",
+  Hekmat_Iranian = "HEKMAT_IRANIAN",
+  Mehregan = "MEHREGAN",
+  Resalat = "RESALAT",
+  Kosar = "KOSAR",
+  Middle_East = "MIDDLE_EAST",
+  Iran_Zamin = "IRAN_ZAMIN",
+  // موسسات اعتباری
+  Mehr_Eghtesad = "MEHR_EGHTESAD",
+  Tosee_Taavon = "TOSEE_TAAVON",
+  Export_Development_Bank = "EXPORT_DEVELOPMENT_BANK",
+  Tosee_Credit = "TOSEE_CREDIT",
+  Mehr_Iran = "MEHR_IRAN",
+  Noor = "NOOR",
+  // سایر
+  Other = "OTHER",
+}
+
+export interface QueryCheck {
+  page?: number;
+  "page-size"?: number;
+  check_date_min?: Date;
+  check_date_max?: Date;
+  amount_min?: number;
+  amount_max?: number;
+  status?: CheckStatusEnum;
+}
+
+export interface GetChecksResponse {
+  count: number;
+  data: {
+    id: string;
+    check_date: string; // ISO date string from API
+    check_number: number;
+    account_number: string;
+    amount: number;
+    issuer_bank: BankEnum;
+    destination_bank: BankEnum | null;
+    status: CheckStatusEnum;
+    created_at: string; // ISO date string from API
+    updated_at: string; // ISO date string from API
+    deleted_at: string | null; // ISO date string from API
+  }[];
+}
+
+export interface GetCheckResponse {
+  id: string;
+  check_date: string; // ISO date string from API
+  check_number: number;
+  account_number: string;
+  amount: number;
+  issuer_bank: BankEnum;
+  description: string | null;
+  destination_bank: BankEnum | null;
+  status: CheckStatusEnum;
+  created_at: string; // ISO date string from API
+  updated_at: string; // ISO date string from API
+  deleted_at: string | null; // ISO date string from API
+  image: FileSummary | null;
+  customer: {
+    id: string;
+    title: string;
+    code: number;
+  } | null;
+}
+
+export interface QueryProduce {
+  page?: number;
+  "page-size"?: number;
+  code?: number;
+  box_weight?: number;
+  lost?: number;
+  waste?: number;
+  product_id?: string;
+  production_date_min?: Date;
+  production_date_max?: Date;
+}
+
+export interface GetProducesResponse {
+  count: number;
+  data: {
+    id: string;
+    code: number;
+    lost: number;
+    waste: number;
+    box_weight: number;
+    production_date: string; // ISO date string from API
+    input_product: {
+      product_id: string;
+      product_title: string;
+      net_weight: number;
+      gross_weight: number;
+      sec_unit_amount: number;
+    };
+    output_products: {
+      product_id: string;
+      product_title: string;
+      net_weight: number;
+      gross_weight: number;
+      sec_unit_amount: number;
+    }[];
+    created_at: string; // ISO date string from API
+    updated_at: string; // ISO date string from API
+    deleted_at: string | null; // ISO date string from API
+  }[];
+}
+
+export interface GetProduceResponse {
+  id: string;
+  code: number;
+  lost: number;
+  waste: number;
+  box_weight: number;
+  production_date: string; // ISO date string from API
+  input_product: {
+    product_id: string;
+    product_title: string;
+    product_code: number;
+    net_weight: number;
+    gross_weight: number;
+    sec_unit_amount: number;
+  };
+  output_products: {
+    product_id: string;
+    product_title: string;
+    product_code: number;
+    net_weight: number;
+    gross_weight: number;
+    sec_unit_amount: number;
+  }[];
+  created_at: string; // ISO date string from API
+  updated_at: string; // ISO date string from API
+  deleted_at: string | null; // ISO date string from API
+}

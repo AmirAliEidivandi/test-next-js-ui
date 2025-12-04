@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   Clock,
   CreditCard,
+  Factory,
   FileCheck,
   FileText,
   FolderTree,
@@ -170,6 +171,13 @@ const menuItems: MenuItem[] = [
     title: "یادآور ها",
     icon: Bell,
     href: "/dashboard/reminders",
+  },
+  {
+    title: "مدیریت تولید",
+    icon: Factory,
+    subItems: [
+      { title: "لیست تولیدات", href: "/dashboard/production/produces" },
+    ],
   },
   {
     title: "آمار ها",

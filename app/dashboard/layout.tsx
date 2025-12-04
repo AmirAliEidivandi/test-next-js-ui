@@ -39,6 +39,7 @@ const getPageTitle = (pathname: string): string => {
     "/dashboard/logs": "لاگ ها و رهگیری",
     "/dashboard/checks": "چک ها",
     "/dashboard/reminders": "یادآور ها",
+    "/dashboard/production/produces": "لیست تولیدات",
     "/dashboard/statistics/customers": "آمار مشتریان",
     "/dashboard/statistics/orders": "آمار سفارشات",
     "/dashboard/statistics/sellers": "آمار فروشندگان",
