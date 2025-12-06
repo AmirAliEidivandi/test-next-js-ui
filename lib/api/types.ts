@@ -106,6 +106,354 @@ export interface GetTopProductsSalesResponse {
   }[];
 }
 
+export interface GetCategorySalesReportResponse {
+  data: {
+    title: string;
+    total_sales_weight: number;
+    total_sales_amount: number;
+    products_count: number;
+    products_with_sales: number;
+    average_sales_weight: number;
+    average_sales_amount: number;
+  }[];
+}
+
+export interface GetPaymentsStatusResponse {
+  count: number;
+  data: {
+    count: number;
+    title: string;
+  }[];
+}
+
+export interface GetDayOfPurchasesResponse {
+  count: number;
+  data: {
+    title: string;
+    count: number;
+  }[];
+}
+
+export interface GetSellersReportResponse {
+  seller_id: string;
+  seller_name: string;
+  total_calls: number;
+  successful_calls: number;
+  failed_calls: number;
+  successful_orders: number;
+  failed_orders: number;
+  delivered_orders: number;
+  failed_orders_reasons: {
+    reason: string;
+    count: number;
+  }[];
+  total_sales_amount: number;
+  average_order_amount: number;
+  highest_order_amount: number;
+  lowest_order_amount: number;
+  conversion_rate: number;
+  finalization_rate: number;
+  total_weight_sold: number;
+  average_weight_per_order: number;
+  unique_customers: number;
+  new_customers: number;
+  returning_customers: number;
+  total_products_items: number;
+  top_products: {
+    product_title: string;
+    total_weight: number;
+    total_amount: number;
+    order_count: number;
+  }[];
+  top_categories: {
+    category_title: string;
+    total_weight: number;
+    total_amount: number;
+  }[];
+  performance_score: number;
+}
+
+export interface GetNegativeInventoryReportResponse {
+  total_products: number;
+  report: {
+    product_id: string;
+    product_code: number;
+    product_title: string;
+    net_weight: number;
+    gross_weight: number;
+    sec_unit_amount: number;
+    box_weight: number;
+    categories: string;
+    retail_price: number;
+    wholesale_price: number;
+  }[];
+  generated_at: string;
+  branch: string;
+}
+
+export interface GetActualCustomerDebtReportResponse {
+  total_customers: number;
+  totals: {
+    total_accounting_debt: number;
+    total_pending_cheques: number;
+    total_actual_debt: number;
+  };
+  report: {
+    customer_id: string;
+    customer_code: number;
+    customer_title: string;
+    accounting_debt: number;
+    pending_cheques_count: number;
+    pending_cheques_total: number;
+    actual_debt: number;
+    pending_cheques_detail: {
+      payment_id: string;
+      amount: number;
+      cheque_due_date: Date;
+      date: Date;
+    }[];
+  }[];
+  generated_at: string;
+  branch: string;
+}
+
+export interface GetReturnedOrdersReportResponse {
+  summary: {
+    total_orders: number;
+    fully_returned_count: number;
+    partially_returned_count: number;
+    total_returned_weight: number;
+    total_returned_amount: number;
+    average_return_percentage: number;
+  };
+  report: {
+    order_id: string;
+    order_code: number;
+    order_step: OrderStepEnum;
+    created_date: Date;
+    delivery_date: Date;
+    customer_id: string;
+    customer_code: number;
+    customer_title: string;
+    seller_id: string;
+    seller_name: string;
+    person_name: string;
+    person_mobile: string;
+    total_ordered_weight: number;
+    total_returned_weight: number;
+    total_returned_amount: number;
+    return_percentage: number;
+    returned_products_count: number;
+    returned_products: {
+      product_id: string;
+      product_code: number;
+      product_title: string;
+      ordered_weight: number;
+      fulfilled_weight: number;
+      returned_weight: number;
+      price: number;
+      returned_amount: number;
+    }[];
+  }[];
+  generated_at: string;
+  branch: string;
+  filters: {
+    from: string;
+    to: string;
+  };
+}
+
+export interface GetReturnedProductsReportResponse {
+  summary: {
+    total_unique_products: number;
+    total_return_incidents: number;
+    total_returned_weight: number;
+    total_returned_amount: number;
+    average_return_percentage: number;
+    top_5_products: {
+      product_title: string;
+      returned_weight: number;
+    }[];
+  };
+  report: {
+    product_id: string;
+    product_code: number;
+    product_title: string;
+    categories: string;
+    total_return_count: number;
+    total_returned_weight: number;
+    total_ordered_weight: number;
+    total_fulfilled_weight: number;
+    total_returned_amount: number;
+    return_percentage: number;
+    avg_price: number;
+    affected_orders_count: number;
+    affected_customers_count: number;
+    current_net_weight: number;
+    current_gross_weight: number;
+  }[];
+  generated_at: string;
+  branch: string;
+  filters: {
+    from: string;
+    to: string;
+  };
+}
+
+export interface GetInactiveCustomersReportResponse {
+  summary: {
+    total_inactive_customers: number;
+    total_lost_revenue: number;
+    avg_customer_value: number;
+    avg_days_inactive: number;
+    risk_breakdown: {
+      high: number;
+      medium: number;
+      low: number;
+    };
+    top_5_valuable_customers: {
+      customer_title: any;
+      total_spent: number;
+      days_inactive: number;
+    }[];
+  };
+  report: {
+    customer_id: string;
+    customer_code: any;
+    customer_title: any;
+    customer_category: any;
+    customer_phone: any;
+    customer_address: any;
+    seller_name: string;
+    total_purchases: number;
+    total_spent: number;
+    avg_order_value: number;
+    first_purchase_date: Date;
+    last_purchase_date: Date;
+    days_since_last_purchase: number;
+    customer_lifetime_days: number;
+    purchase_frequency: number;
+    risk_level: string;
+  }[];
+  generated_at: string;
+  branch: string;
+  filters: {
+    min_purchases: number;
+    inactive_days: number;
+    cutoff_date: string;
+  };
+}
+
+export interface GetCustomersWithoutPurchaseReportResponse {
+  summary: {
+    total_customers_without_purchase: number;
+    never_contacted: number;
+    contacted_no_purchase: number;
+    total_failed_attempts: number;
+    avg_days_since_registration: number;
+    top_5_not_purchased_reasons: {
+      reason: string;
+      count: number;
+    }[];
+    oldest_registered: {
+      customer_title: string;
+      days_since_registration: number;
+      total_contacts: number;
+    }[];
+  };
+  report: {
+    customer_id: string;
+    customer_code: number;
+    customer_title: string;
+    customer_category: CustomerCategoryEnum;
+    customer_type: CustomerTypeEnum;
+    customer_phone: string;
+    customer_address: string;
+    seller_name: string;
+    registered_date: Date;
+    days_since_registration: number;
+    total_contacts: number;
+    failed_orders: number;
+    last_contact_date: Date;
+    days_since_last_contact: number;
+    most_common_not_purchased_reason: string;
+    all_not_purchased_reasons: Record<string, number>;
+    status: string;
+  }[];
+  generated_at: string;
+  branch: string;
+}
+
+export interface GetProductsSummaryReportResponse {
+  products: {
+    product_id: string;
+    product: {
+      id: string;
+      title: string;
+      code: number;
+      net_weight: number;
+      gross_weight: number;
+      sec_unit_amount: number;
+    };
+    warehouse_id: string;
+    receiving_count: number;
+    receiving_weight: number;
+    receiving_amount: number;
+    dispatching_count: number;
+    dispatching_weight: number;
+    dispatching_amount: number;
+    produce_input_count: number;
+    produce_input_weight: number;
+    produce_output_count: number;
+    produce_output_weight: number;
+    cargo_dispatch_count: number;
+    cargo_dispatch_weight: number;
+    cargo_dispatch_amount: number;
+    cargo_return_count: number;
+    cargo_return_weight: number;
+    cargo_return_amount: number;
+    warehouse_inventory: number;
+    calculated_remaining: number;
+  }[];
+  from: string;
+  to: string;
+  total_products: number;
+  current_page: number;
+  page_size: number;
+  total_pages: number;
+  has_next_page: boolean;
+  has_previous_page: boolean;
+}
+
+export interface GetProductsPeriodReportResponse {
+  data: {
+    product_code: number;
+    product_title: string;
+    product_hp_title: string;
+    product_id: string;
+    product_hp_code: number;
+    opening_quantity: number;
+    opening_count: number;
+    purchase_quantity: number;
+    purchase_count: number;
+    sales_quantity: number;
+    sales_count: number;
+    closing_quantity: number;
+    closing_count: number;
+  }[];
+  count: number;
+  from: string;
+  to: string;
+  total_products: number;
+  current_page: number;
+  page_size: number;
+  total_pages: number;
+  has_next_page: boolean;
+  has_previous_page: boolean;
+  generated_at: string;
+  branch: string;
+}
+
 // sellers list response
 export interface GetSellersResponse {
   id: string; // employee id
