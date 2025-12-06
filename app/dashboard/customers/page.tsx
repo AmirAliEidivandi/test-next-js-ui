@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Pagination,
@@ -176,6 +177,7 @@ export default function CustomersPage() {
               <TableHead className="text-right">نوع</TableHead>
               <TableHead className="text-right">فروشنده</TableHead>
               <TableHead className="text-right">تاریخ ایجاد</TableHead>
+              <TableHead className="text-center">وضعیت</TableHead>
               <TableHead className="text-center">عملیات</TableHead>
             </TableRow>
           </TableHeader>
@@ -219,6 +221,18 @@ export default function CustomersPage() {
                         locale: faIR,
                       })
                     )}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge
+                      variant={customer.is_online ? "default" : "secondary"}
+                      className={
+                        customer.is_online
+                          ? "bg-green-500 hover:bg-green-600"
+                          : ""
+                      }
+                    >
+                      {customer.is_online ? "آنلاین" : "آفلاین"}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1 justify-center">
@@ -298,7 +312,7 @@ export default function CustomersPage() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={10}
+                  colSpan={11}
                   className="text-center text-muted-foreground py-8"
                 >
                   داده‌ای برای نمایش وجود ندارد

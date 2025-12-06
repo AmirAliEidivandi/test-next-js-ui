@@ -1,3 +1,4 @@
+export * from "./use-categories";
 export * from "./use-checks";
 export * from "./use-customer-requests";
 export * from "./use-customers";
@@ -6,6 +7,8 @@ export * from "./use-files";
 export * from "./use-follow-ups";
 export * from "./use-invoices";
 export * from "./use-orders";
+export * from "./use-products";
 export * from "./use-reminders";
 export * from "./use-return-requests";
 export * from "./use-tickets";
+export * from "./use-warehouses";

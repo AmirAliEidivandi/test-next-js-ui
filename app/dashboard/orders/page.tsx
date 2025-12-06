@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Pagination,
@@ -176,7 +177,7 @@ export default function OrdersPage() {
               <TableHead className="text-right">تاریخ ایجاد</TableHead>
               <TableHead className="text-right">تاریخ تحویل</TableHead>
               <TableHead className="text-right">نماینده</TableHead>
-              <TableHead className="text-right">خرید انجام شد</TableHead>
+              <TableHead className="text-center">وضعیت</TableHead>
               <TableHead className="text-center">عملیات</TableHead>
             </TableRow>
           </TableHeader>
@@ -249,7 +250,18 @@ export default function OrdersPage() {
                     <TableCell className="max-w-[160px] truncate">
                       {order.representative_name || "-"}
                     </TableCell>
-                    <TableCell>{order.bought ? "بله" : "خیر"}</TableCell>
+                    <TableCell className="text-center">
+                      <Badge
+                        variant={order.is_online ? "default" : "secondary"}
+                        className={
+                          order.is_online
+                            ? "bg-green-500 hover:bg-green-600"
+                            : ""
+                        }
+                      >
+                        {order.is_online ? "آنلاین" : "آفلاین"}
+                      </Badge>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1 justify-center">
                         <Tooltip>

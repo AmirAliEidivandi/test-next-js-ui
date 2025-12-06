@@ -1,5 +1,6 @@
 // Export all API related modules
 export * from "./auth";
+export * from "./categories";
 export * from "./checks";
 export * from "./client";
 export * from "./customer-requests";
@@ -12,3 +13,5 @@ export * from "./profile";
 export * from "./stats";
 export * from "./ticket";
 export * from "./types";
+export * from "./warehouses";
+export * from "./products";

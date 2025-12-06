@@ -246,47 +246,67 @@ export interface QueryCustomer {
   hp_title?: string; // عنوان حسابداری
 }
 
+export enum CustomerTypeEnum {
+  PERSONAL = "PERSONAL",
+  CORPORATE = "CORPORATE",
+}
+
+export enum CustomerCategoryEnum {
+  RESTAURANT = "RESTAURANT",
+  HOTEL = "HOTEL",
+  CHAIN_STORE = "CHAIN_STORE",
+  GOVERNMENTAL = "GOVERNMENTAL",
+  FAST_FOOD = "FAST_FOOD",
+  CHARITY = "CHARITY",
+  BUTCHER = "BUTCHER",
+  WHOLESALER = "WHOLESALER",
+  FELLOW = "FELLOW",
+  CATERING = "CATERING",
+  KEBAB = "KEBAB",
+  DISTRIBUTOR = "DISTRIBUTOR",
+  HOSPITAL = "HOSPITAL",
+  FACTORY = "FACTORY",
+}
+
+export enum CustomerCredibilityBySellerEnum {
+  NOT_EVALUATED = "NOT_EVALUATED",
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  TRUSTED = "TRUSTED",
+  FULLY_TRUSTED = "FULLY_TRUSTED",
+}
+
+export enum CustomerCredibilityBySalesManagerEnum {
+  NOT_EVALUATED = "NOT_EVALUATED",
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  TRUSTED = "TRUSTED",
+  FULLY_TRUSTED = "FULLY_TRUSTED",
+}
+
+export enum CustomerBehaviorTagsEnum {
+  MANNERED = "MANNERED",
+  POLITE = "POLITE",
+  PATIENCE = "PATIENCE",
+  ANGRY = "ANGRY",
+  HASTY = "HASTY",
+  RUDE = "RUDE",
+}
 export interface GetCustomersResponse {
   count: number;
   data: Array<{
     id: string;
     title: string;
     type: "PERSONAL" | "CORPORATE";
-    category:
-      | "RESTAURANT"
-      | "HOTEL"
-      | "CHAIN_STORE"
-      | "GOVERNMENTAL"
-      | "FAST_FOOD"
-      | "CHARITY"
-      | "BUTCHER"
-      | "WHOLESALER"
-      | "FELLOW"
-      | "CATERING"
-      | "KEBAB"
-      | "DISTRIBUTOR"
-      | "HOSPITAL"
-      | "FACTORY";
+    category: CustomerCategoryEnum;
     is_property_owner: boolean;
     did_we_contact: boolean;
     phone: string;
     address: string;
     age: number;
-    credibility_by_seller:
-      | "NOT_EVALUATED"
-      | "LOW"
-      | "MEDIUM"
-      | "TRUSTED"
-      | "FULLY_TRUSTED";
-    credibility_by_sales_manager:
-      | "NOT_EVALUATED"
-      | "LOW"
-      | "MEDIUM"
-      | "TRUSTED"
-      | "FULLY_TRUSTED";
-    behavior_tags: Array<
-      "MANNERED" | "POLITE" | "PATIENCE" | "ANGRY" | "HASTY" | "RUDE"
-    >;
+    credibility_by_seller: CustomerCredibilityBySellerEnum;
+    credibility_by_sales_manager: CustomerCredibilityBySalesManagerEnum;
+    behavior_tags: Array<CustomerBehaviorTagsEnum>;
     national_id: string;
     branch_id: string;
     seller_id: string;
@@ -369,6 +389,7 @@ export interface GetCustomersResponse {
       }
     ];
     representative_name: string; // نماینده ی مشتری
+    is_online: boolean;
   }>;
 }
 
@@ -394,23 +415,9 @@ export interface GetCustomersByDebtResponse {
   };
   data: {
     id: string;
-    type: "PERSONAL" | "CORPORATE";
+    type: CustomerTypeEnum;
     title: string;
-    category:
-      | "RESTAURANT"
-      | "HOTEL"
-      | "CHAIN_STORE"
-      | "GOVERNMENTAL"
-      | "FAST_FOOD"
-      | "CHARITY"
-      | "BUTCHER"
-      | "WHOLESALER"
-      | "FELLOW"
-      | "CATERING"
-      | "KEBAB"
-      | "DISTRIBUTOR"
-      | "HOSPITAL"
-      | "FACTORY";
+    category: CustomerCategoryEnum;
     phone: string;
     code: number;
     hp_code: number;
@@ -433,30 +440,35 @@ export interface GetCustomersByDebtResponse {
       balance: number;
     };
     representative_name: string;
+    is_online: boolean;
   }[];
 }
 
+export enum OrderStepEnum {
+  SELLER = "SELLER",
+  SALES_MANAGER = "SALES_MANAGER",
+  PROCESSING = "PROCESSING",
+  INVENTORY = "INVENTORY",
+  ACCOUNTING = "ACCOUNTING",
+  CARGO = "CARGO",
+  PARTIALLY_DELIVERED = "PARTIALLY_DELIVERED",
+  DELIVERED = "DELIVERED",
+  RETURNED = "RETURNED",
+  PARTIALLY_RETURNED = "PARTIALLY_RETURNED",
+}
+
+export enum PaymentStatusEnum {
+  PAID = "PAID",
+  NOT_PAID = "NOT_PAID",
+  PARTIALLY_PAID = "PARTIALLY_PAID",
+}
 export interface GetCustomerReportResponse {
   count: number;
   data: {
     id: string;
     title: string;
-    type: "PERSONAL" | "CORPORATE";
-    category:
-      | "RESTAURANT"
-      | "HOTEL"
-      | "CHAIN_STORE"
-      | "GOVERNMENTAL"
-      | "FAST_FOOD"
-      | "CHARITY"
-      | "BUTCHER"
-      | "WHOLESALER"
-      | "FELLOW"
-      | "CATERING"
-      | "KEBAB"
-      | "DISTRIBUTOR"
-      | "HOSPITAL"
-      | "FACTORY";
+    type: CustomerTypeEnum;
+    category: CustomerCategoryEnum;
     code: number;
     hp_code: number;
     capillary_sales_line: {
@@ -478,25 +490,23 @@ export interface GetCustomerReportResponse {
       balance: number;
     };
     representative_name: string;
+    is_online: boolean;
     last_order: {
       id: string;
       code: number;
-      payment_status: "PAID" | "NOT_PAID" | "PARTIALLY_PAID"; // پرداخت شده - پرداخت نشده - پرداخت جزئی
-      step:
-        | "SELLER" // فروشنده
-        | "SALES_MANAGER" // مدیر فروش
-        | "PROCESSING" // آماده سازی
-        | "INVENTORY" // انبار
-        | "ACCOUNTING" // حسابداری
-        | "CARGO" // مرسوله
-        | "PARTIALLY_DELIVERED" // تحویل جزئی
-        | "DELIVERED" // تحویل شده
-        | "RETURNED" // مرجوعی کامل
-        | "PARTIALLY_RETURNED"; // مرجوعی جزئی
+      payment_status: PaymentStatusEnum; // پرداخت شده - پرداخت نشده - پرداخت جزئی
+      step: OrderStepEnum; // مرحله
       created_at: Date;
       total_amount: number;
     };
   }[];
+}
+
+export enum DeliveryMethodEnum {
+  FREE_OUR_TRUCK = "FREE_OUR_TRUCK",
+  FREE_OTHER_SERVICES = "FREE_OTHER_SERVICES",
+  PAID = "PAID",
+  AT_INVENTORY = "AT_INVENTORY",
 }
 
 export interface QueryOrder {
@@ -504,17 +514,7 @@ export interface QueryOrder {
   "page-size"?: number;
   code?: number;
   hp_invoice_code?: number;
-  step?:
-    | "SELLER"
-    | "SALES_MANAGER"
-    | "PROCESSING"
-    | "INVENTORY"
-    | "ACCOUNTING"
-    | "CARGO"
-    | "PARTIALLY_DELIVERED"
-    | "DELIVERED"
-    | "RETURNED"
-    | "PARTIALLY_RETURNED"; // مرحله
+  step?: OrderStepEnum; // مرحله
   seller_id?: string;
   archived?: boolean; // وضعیت آرشیو: آرشیو شده - آرشیو نشده
   created_date_min?: Date;
@@ -523,11 +523,7 @@ export interface QueryOrder {
   bought?: boolean;
   answered?: boolean; // وضعیت تماس: جواب داد - جواب نداد
   new_customer?: boolean; // وضعیت مشتری: مشتری جدید - مشتری قدیمی
-  delivery_method?:
-    | "FREE_OUR_TRUCK"
-    | "FREE_OTHER_SERVICES"
-    | "PAID"
-    | "AT_INVENTORY"; // روش تحویل
+  delivery_method?: DeliveryMethodEnum; // روش تحویل
   customer_id?: string;
   did_we_contact?: boolean; // تماس از جانب: ما - مشتری
   delivery_date_min?: Date; // تاریخ تحویل: از تاریخ
@@ -542,25 +538,11 @@ export interface GetOrdersResponse {
     id: string;
     code: number;
     delivery_date: Date;
-    payment_status: "PAID" | "NOT_PAID" | "PARTIALLY_PAID"; // پرداخت شده - پرداخت نشده - پرداخت جزئی
+    payment_status: PaymentStatusEnum; // پرداخت شده - پرداخت نشده - پرداخت جزئی
     hp_invoice_code: number; // کد حسابداری فاکتور
-    step:
-      | "SELLER" // فروشنده
-      | "SALES_MANAGER" // مدیر فروش
-      | "PROCESSING" // آماده سازی
-      | "INVENTORY" // انبار
-      | "ACCOUNTING" // حسابداری
-      | "CARGO" // مرسوله
-      | "PARTIALLY_DELIVERED" // تحویل جزئی
-      | "DELIVERED" // تحویل شده
-      | "RETURNED" // مرجوعی کامل
-      | "PARTIALLY_RETURNED"; // مرجوعی جزئی
+    step: OrderStepEnum; // مرحله
     created_at: Date;
-    delivery_method:
-      | "FREE_OUR_TRUCK"
-      | "FREE_OTHER_SERVICES"
-      | "PAID"
-      | "AT_INVENTORY"; // رایگان با ماشین شرکت - رایگان با سرویس خارجی - ارسال با هزینه مشتری - تحویل درب انبار
+    delivery_method: DeliveryMethodEnum; // رایگان با ماشین شرکت - رایگان با سرویس خارجی - ارسال با هزینه مشتری - تحویل درب انبار
     customer: {
       id: string;
       title: string;
@@ -575,9 +557,16 @@ export interface GetOrdersResponse {
       };
     };
     bought: boolean;
+    is_online: boolean;
     representative_name: string;
     day_index: number; // 0 - 1 - 2 - 3 - 4 - 5 - 6: شنبه - یکشنبه - دوشنبه - سه شنبه - چهارشنبه - پنجشنبه - جمعه
   }[];
+}
+
+export enum InvoiceTypeEnum {
+  PURCHASE = "PURCHASE",
+  RETURN_FROM_PURCHASE = "RETURN_FROM_PURCHASE",
+  SELL = "SELL",
 }
 
 export interface QueryInvoice {
@@ -593,8 +582,8 @@ export interface QueryInvoice {
   to?: Date;
   amount_min?: number;
   amount_max?: number;
-  payment_status?: "PAID" | "NOT_PAID" | "PARTIALLY_PAID";
-  type?: "PURCHASE" | "RETURN_FROM_PURCHASE" | "SELL";
+  payment_status?: PaymentStatusEnum;
+  type?: InvoiceTypeEnum;
 }
 
 export interface GetInvoicesResponse {
@@ -615,16 +604,30 @@ export interface GetInvoicesResponse {
       id: string;
       code: number;
     };
-    payment_status: "PAID" | "NOT_PAID" | "PARTIALLY_PAID"; // پرداخت شده - پرداخت نشده - پرداخت جزئی
-    type: "PURCHASE" | "RETURN_FROM_PURCHASE" | "SELL"; // خرید - بازگشت از خرید - فروش
+    payment_status: PaymentStatusEnum; // پرداخت شده - پرداخت نشده - پرداخت جزئی
+    type: InvoiceTypeEnum; // خرید - بازگشت از خرید - فروش
   }[];
+}
+
+export enum PaymentMethodEnum {
+  CASH = "CASH",
+  ONLINE = "ONLINE",
+  WALLET = "WALLET",
+}
+
+export enum CustomerRequestStatusEnum {
+  PENDING = "PENDING",
+  CONVERTED_TO_ORDER = "CONVERTED_TO_ORDER",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  CANCELLED = "CANCELLED",
 }
 
 export interface QueryCustomerRequest {
   page?: number;
   "page-size"?: number;
-  payment_method?: "CASH" | "ONLINE" | "WALLET";
-  status?: "PENDING" | "CONVERTED_TO_ORDER" | "APPROVED" | "REJECTED";
+  payment_method?: PaymentMethodEnum;
+  status?: CustomerRequestStatusEnum;
   customer_id?: string;
   code?: number;
   created_at_min?: Date;
@@ -642,12 +645,12 @@ export interface GetCustomerRequestsResponse {
       title: string;
       code: number;
     };
-    payment_method: "CASH" | "ONLINE" | "WALLET"; // نوع پرداخت: نقدی - آنلاین - کیف پول
+    payment_method: PaymentMethodEnum; // نوع پرداخت: نقدی - آنلاین - کیف پول
     products_count: number; // تعداد محصولات
     representative_name: string; // نماینده
     total_items: number; // تعداد محصولات
     total_price?: number; // قیمت کل
-    status: "PENDING" | "CONVERTED_TO_ORDER" | "APPROVED" | "REJECTED"; // وضعیت: درحال انتظار - تبدیل به سفارش - تایید شده - رد شده
+    status: CustomerRequestStatusEnum; // وضعیت: درحال انتظار - تبدیل به سفارش - تایید شده - رد شده
   }[];
 }
 
@@ -722,6 +725,27 @@ export interface GetVisitorsResponse {
   }[];
 }
 
+export enum TicketStatusEnum {
+  OPEN = "OPEN",
+  CLOSED = "CLOSED",
+  REOPENED = "REOPENED",
+  RESOLVED = "RESOLVED",
+  WAITING_CUSTOMER = "WAITING_CUSTOMER",
+  WAITING_SUPPORT = "WAITING_SUPPORT",
+}
+
+export enum TicketPriorityEnum {
+  LOW = "LOW",
+  NORMAL = "NORMAL",
+  HIGH = "HIGH",
+  URGENT = "URGENT",
+}
+
+export enum TicketLastSenderTypeEnum {
+  CUSTOMER_PERSON = "CUSTOMER_PERSON",
+  EMPLOYEE = "EMPLOYEE",
+}
+
 export interface QueryTicket {
   page?: number;
   "page-size"?: number;
@@ -730,21 +754,15 @@ export interface QueryTicket {
   creator_person_id?: string;
   employee_id?: string;
   assigned_to_id?: string;
-  status?:
-    | "OPEN" // باز
-    | "CLOSED" // بسته
-    | "REOPENED" // باز شده
-    | "RESOLVED" // حل شده
-    | "WAITING_CUSTOMER" // در انتظار مشتری
-    | "WAITING_SUPPORT"; // در انتظار پشتیبان
-  priority?: "LOW" | "NORMAL" | "HIGH" | "URGENT"; // کم - متوسط - زیاد - بسیار زیاد
+  status?: TicketStatusEnum; // باز - بسته - باز شده - حل شده - در انتظار مشتری - در انتظار پشتیبان
+  priority?: TicketPriorityEnum; // کم - متوسط - زیاد - بسیار زیاد
   sort_by?: "last_message" | "updated_at"; // آخرین پیام - آخرین به روز رسانی
   sort_order?: "asc" | "desc"; // صعودی - نزولی
   created_at_min?: Date; // تاریخ ایجاد از
   created_at_max?: Date; // تاریخ ایجاد تا
   deleted?: boolean; // حذف شده
   search?: string; // جستجو
-  last_sender_type?: "CUSTOMER_PERSON" | "EMPLOYEE"; // نوع آخرین ارسال کننده: مشتری - پشتیبان
+  last_sender_type?: TicketLastSenderTypeEnum; // نوع آخرین ارسال کننده: مشتری - پشتیبان
 }
 
 export interface GetTicketsResponse {
@@ -816,22 +834,8 @@ export interface GetTicketResponse {
     id: string;
     title: string;
     code: number;
-    type: "PERSONAL" | "CORPORATE";
-    category:
-      | "RESTAURANT"
-      | "HOTEL"
-      | "CHAIN_STORE"
-      | "GOVERNMENTAL"
-      | "FAST_FOOD"
-      | "CHARITY"
-      | "BUTCHER"
-      | "WHOLESALER"
-      | "FELLOW"
-      | "CATERING"
-      | "KEBAB"
-      | "DISTRIBUTOR"
-      | "HOSPITAL"
-      | "FACTORY";
+    type: CustomerTypeEnum;
+    category: CustomerCategoryEnum;
     capillary_sales_line: {
       id: string;
       line_number: number;
@@ -864,7 +868,7 @@ export interface GetTicketMessagesResponse {
   data: {
     id: string;
     ticket_id: string;
-    sender_type: "CUSTOMER_PERSON" | "EMPLOYEE";
+    sender_type: TicketLastSenderTypeEnum;
     employee_id: string | null;
     person_id: string | null;
     message: string;
@@ -912,19 +916,13 @@ export interface CreateTicketResponse {
     subject: string;
     priority: string;
     message: string;
-    status:
-      | "OPEN"
-      | "CLOSED"
-      | "REOPENED"
-      | "RESOLVED"
-      | "WAITING_CUSTOMER"
-      | "WAITING_SUPPORT";
+    status: TicketStatusEnum;
     creator_person_id: string;
     customer_id: string;
     created_at: Date;
   };
   message: {
-    sender_type: "CUSTOMER_PERSON" | "EMPLOYEE";
+    sender_type: TicketLastSenderTypeEnum;
     message: string;
     created_at: Date;
   };
@@ -934,17 +932,11 @@ export interface CreateTicketResponse {
 export interface ReplyTicketResponse {
   ticket: {
     id: string;
-    status:
-      | "OPEN"
-      | "CLOSED"
-      | "REOPENED"
-      | "RESOLVED"
-      | "WAITING_CUSTOMER"
-      | "WAITING_SUPPORT";
+    status: TicketStatusEnum;
   };
   message: {
     id: string;
-    sender_type: "CUSTOMER_PERSON" | "EMPLOYEE";
+    sender_type: TicketLastSenderTypeEnum;
     employee?: {
       id: string;
       profile: {
@@ -986,11 +978,22 @@ export interface QueryReturnRequest {
   customer_id?: string;
 }
 
+export enum ReturnRequestStatusEnum {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  RECEIVED = "RECEIVED",
+}
+
+export enum ReturnRequestReasonEnum {
+  NOT_GOOD = "NOT_GOOD",
+}
+
 export interface GetReturnRequestsResponse {
   data: {
     id: string;
-    status: "PENDING" | "APPROVED" | "REJECTED" | "RECEIVED";
-    reason: "NOT_GOOD";
+    status: ReturnRequestStatusEnum;
+    reason: ReturnRequestReasonEnum;
     order: {
       id: string;
       code: number;
@@ -1000,7 +1003,7 @@ export interface GetReturnRequestsResponse {
       id: string;
       code: number;
       address: string;
-      status: "PENDING" | "CONVERTED_TO_ORDER" | "APPROVED" | "REJECTED";
+      status: CustomerRequestStatusEnum;
     };
     created_at: Date;
     customer: {
@@ -1069,39 +1072,15 @@ export interface GetReminderResponse {
     id: string;
     title: string;
     code: number;
-    type: "PERSONAL" | "CORPORATE";
-    category:
-      | "RESTAURANT"
-      | "HOTEL"
-      | "CHAIN_STORE"
-      | "GOVERNMENTAL"
-      | "FAST_FOOD"
-      | "CHARITY"
-      | "BUTCHER"
-      | "WHOLESALER"
-      | "FELLOW"
-      | "CATERING"
-      | "KEBAB"
-      | "DISTRIBUTOR"
-      | "HOSPITAL"
-      | "FACTORY";
+    type: CustomerTypeEnum;
+    category: CustomerCategoryEnum;
   };
   created_at: Date;
   order: {
     id: string;
     code: number;
     address: string;
-    step:
-      | "SELLER"
-      | "SALES_MANAGER"
-      | "PROCESSING"
-      | "INVENTORY"
-      | "ACCOUNTING"
-      | "CARGO"
-      | "PARTIALLY_DELIVERED"
-      | "DELIVERED"
-      | "RETURNED"
-      | "PARTIALLY_RETURNED";
+    step: OrderStepEnum;
     created_at: Date;
   } | null;
 }
@@ -1113,13 +1092,20 @@ export interface QueryFollowUp {
   capillary_sales_line_id?: string;
 }
 
+export enum FollowUpResultEnum {
+  CUSTOMER = "CUSTOMER",
+  NOT_CUSTOMER = "NOT_CUSTOMER",
+  REQUIRES_FOLLOW_UP = "REQUIRES_FOLLOW_UP",
+  NOT_ANSWERED = "NOT_ANSWERED",
+}
+
 export interface GetFollowUpsResponse {
   count: number;
   data: {
     id: string;
     description: string;
     attempt: number;
-    result: "CUSTOMER" | "NOT_CUSTOMER" | "REQUIRES_FOLLOW_UP" | "NOT_ANSWERED";
+    result: FollowUpResultEnum;
     employee: {
       id: string;
       profile: {
@@ -1304,4 +1290,180 @@ export interface GetProduceResponse {
   created_at: string; // ISO date string from API
   updated_at: string; // ISO date string from API
   deleted_at: string | null; // ISO date string from API
+}
+
+export enum TemperatureTypeEnum {
+  COLD = "COLD", // سرد
+  HOT = "HOT", // گرم
+}
+
+export type GetCategoriesResponse = Array<{
+  id: string;
+  title: string;
+  parent_id: string | null;
+  warehouse_id: string;
+  deleted: boolean;
+  code: number;
+  priority: number;
+  temperature_type: TemperatureTypeEnum; // نوع
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  _count: {
+    products: number;
+  };
+  children: GetCategoriesResponse;
+}>;
+
+export interface GetCategoryResponse {
+  id: string;
+  title: string;
+  parent_id: string | null;
+  warehouse_id: string;
+  deleted: boolean;
+  code: number;
+  priority: number;
+  temperature_type: TemperatureTypeEnum;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  _count: {
+    products: number;
+  };
+  children: GetCategoryResponse[];
+  parent: GetCategoryResponse | null;
+  image: FileSummary | null;
+}
+
+export interface UpdateCategoryRequest {
+  title?: string;
+  parent_id?: string | null;
+  priority?: number;
+  temperature_type?: TemperatureTypeEnum;
+  image_id?: string | null;
+}
+
+export interface UpdateCategoryResponse {
+  id: string;
+  title: string;
+  parent_id: string | null;
+  warehouse_id: string;
+  deleted: boolean;
+  code: number;
+  priority: number;
+  temperature_type: TemperatureTypeEnum;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  _count: {
+    products: number;
+  };
+  children: GetCategoryResponse[];
+  parent: GetCategoryResponse | null;
+  image: FileSummary | null;
+}
+
+export type GetProductsResponse = Array<{
+  id: string;
+  title: string;
+  code: number;
+  category_ids: string[];
+  categories: {
+    id: string;
+    title: string;
+    code: number;
+    products_count: number;
+  }[];
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  hp_code: number | null;
+  hp_title: string | null;
+  is_online: boolean;
+  is_special: boolean;
+  net_weight: number;
+  gross_weight: number;
+  online_price: number;
+  retail_price: number;
+  wholesale_price: number;
+}>;
+
+export enum SettlementMethodEnum {
+  CASH = "CASH",
+  CHEQUE = "CHEQUE",
+  CREDIT = "CREDIT",
+}
+
+export interface GetProductResponse {
+  id: string;
+  title: string;
+  code: number;
+  category_ids: string[];
+  categories: {
+    id: string;
+    title: string;
+    code: number;
+    products_count: number;
+  }[];
+  description: string | null;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  hp_code: number | null;
+  hp_title: string | null;
+  invoice_title: string | null;
+  gross_weight: number;
+  net_weight: number;
+  online_price: number;
+  retail_price: number;
+  wholesale_price: number;
+  is_online: boolean;
+  is_special: boolean;
+  images: FileSummary[];
+  locked: boolean;
+  purchase_price: number;
+  settlement_methods: SettlementMethodEnum[];
+}
+
+export interface UpdateProductRequest {
+  title?: string;
+  description?: string;
+  hp_code?: number;
+  hp_title?: string;
+  invoice_title?: string;
+  settlement_methods?: SettlementMethodEnum[];
+  is_online?: boolean;
+  is_special?: boolean;
+  image_ids?: string[];
+}
+
+export interface UpdateProductResponse {
+  id: string;
+  title: string;
+  code: number;
+  category_ids: string[];
+  categories: {
+    id: string;
+    title: string;
+    code: number;
+    products_count: number;
+  }[];
+  description: string | null;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  hp_code: number | null;
+  hp_title: string | null;
+  invoice_title: string | null;
+  gross_weight: number;
+  net_weight: number;
+  online_price: number;
+  retail_price: number;
+  wholesale_price: number;
+  is_online: boolean;
+  is_special: boolean;
+  images: FileSummary[];
+  locked: boolean;
+  purchase_price: number;
+  settlement_methods: SettlementMethodEnum[];
 }
