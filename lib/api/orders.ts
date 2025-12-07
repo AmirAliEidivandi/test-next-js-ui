@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { GetOrdersResponse, QueryOrder } from "./types";
+import type { GetOrderResponse, GetOrdersResponse, QueryOrder } from "./types";
 
 const buildOrderQueryString = (query?: QueryOrder) => {
   const params = new URLSearchParams();
@@ -77,5 +77,8 @@ export const ordersApi = {
 
     return apiClient.get<GetOrdersResponse>(endpoint);
   },
+  async getOrder(id: string): Promise<GetOrderResponse> {
+    const endpoint = `/orders/${id}`;
+    return apiClient.get<GetOrderResponse>(endpoint);
+  },
 };
-

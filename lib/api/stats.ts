@@ -1,8 +1,10 @@
 import { apiClient } from "./client";
 import type {
   GetHeadCategorySalesResponse,
+  GetProductKardexResponse,
   GetProductsSalesResponse,
   GetTopProductsSalesResponse,
+  QueryProductKardex,
   QueryStats,
 } from "./types";
 
@@ -149,6 +151,22 @@ export const statsApi = {
     const queryString = params.toString();
     return apiClient.get<GetTopProductsSalesResponse>(
       `/stats/top-products-sales${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getProductKardex(
+    query: QueryProductKardex
+  ): Promise<GetProductKardexResponse> {
+    const params = new URLSearchParams();
+    params.append("product_id", query.product_id);
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetProductKardexResponse>(
+      `/stats/product-kardex${queryString ? `?${queryString}` : ""}`
     );
   },
 };

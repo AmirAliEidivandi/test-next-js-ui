@@ -16,3 +16,16 @@ export function useOrders(filters?: QueryOrder) {
     enabled: true,
   });
 }
+
+export function useOrder(id: string | null) {
+  return useQuery({
+    queryKey: orderKeys.detail(id || ""),
+    queryFn: () => {
+      if (!id) {
+        throw new Error("Order ID is required");
+      }
+      return ordersApi.getOrder(id);
+    },
+    enabled: !!id,
+  });
+}

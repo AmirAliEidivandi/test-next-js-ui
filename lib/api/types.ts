@@ -806,9 +806,9 @@ export enum OrderStepEnum {
 }
 
 export enum PaymentStatusEnum {
-  PAID = "PAID",
-  NOT_PAID = "NOT_PAID",
-  PARTIALLY_PAID = "PARTIALLY_PAID",
+  PAID = "PAID", // پرداخت شده
+  NOT_PAID = "NOT_PAID", // پرداخت نشده
+  PARTIALLY_PAID = "PARTIALLY_PAID", // پرداخت جزئی
 }
 export interface GetCustomerReportResponse {
   count: number;
@@ -908,6 +908,152 @@ export interface GetOrdersResponse {
     is_online: boolean;
     representative_name: string;
     day_index: number; // 0 - 1 - 2 - 3 - 4 - 5 - 6: شنبه - یکشنبه - دوشنبه - سه شنبه - چهارشنبه - پنجشنبه - جمعه
+  }[];
+}
+
+export enum NotPurchasedReasonEnum {
+  CUSTOMER_STOCK_FULL_OUR_PRODUCT = "CUSTOMER_STOCK_FULL_OUR_PRODUCT",
+  CUSTOMER_STOCK_FULL_COMPETITORS_PRODUCT = "CUSTOMER_STOCK_FULL_COMPETITORS_PRODUCT",
+  OUR_SERVICE_DID_NOT_SATISFY = "OUR_SERVICE_DID_NOT_SATISFY",
+  INSUFFICIENT_STOCK = "INSUFFICIENT_STOCK",
+  COULD_NOT_REACH_CUSTOMER = "COULD_NOT_REACH_CUSTOMER",
+  LONG_PAYMENT_PERIOD = "LONG_PAYMENT_PERIOD",
+  PRICE_DIFFERENCE_WITH_COMPETITORS = "PRICE_DIFFERENCE_WITH_COMPETITORS",
+  NOT_INTERESTED_TO_WORK_WITH_US = "NOT_INTERESTED_TO_WORK_WITH_US",
+  MARKET_LOCKED = "MARKET_LOCKED",
+  PRODUCT_LOCKED = "PRODUCT_LOCKED",
+  OLD_PRICE = "OLD_PRICE",
+  CUSTOMER_IS_LOCKED = "CUSTOMER_IS_LOCKED",
+  OTHER = "OTHER",
+}
+
+export enum CargoTypeEnum {
+  DISPATCH = "DISPATCH", // مرسوله
+  RETURN = "RETURN", // مرجوعی
+}
+
+export interface GetOrderResponse {
+  id: string;
+  code: number;
+  delivery_date: Date;
+  payment_status: PaymentStatusEnum;
+  hp_invoice_code: number;
+  step: OrderStepEnum;
+  created_at: Date;
+  delivery_method: DeliveryMethodEnum;
+  created_date: Date;
+  updated_at: Date;
+  behavior_tags: CustomerBehaviorTagsEnum[];
+  description: string;
+  settlements: {
+    date: Date;
+    method: SettlementMethodEnum;
+    description: string | null;
+  }[];
+  fulfilled: boolean;
+  customer: {
+    id: string;
+    title: string;
+    code: number;
+    type: CustomerTypeEnum;
+    category: CustomerCategoryEnum;
+    capillary_sales_line: {
+      id: string;
+      line_number: number;
+      title: string;
+    } | null;
+  };
+  seller: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+  order_creator: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+  bought: boolean;
+  is_online: boolean;
+  representative_name: string;
+  day_index: number;
+  ordered_basket:
+    | {
+        price: number;
+        weight: number;
+        cancelled_weight: number;
+        inventory_net_weight: number;
+        fulfilled_weight: number;
+        fulfilled: boolean;
+        product_title: string;
+        product_id: string;
+        product_code: number;
+        online_price: number;
+        retail_price: number;
+        wholesale_price: number;
+        sec_unit_amount: number;
+      }[]
+    | null;
+  failed_basket:
+    | {
+        price: number;
+        weight: number;
+        reason: NotPurchasedReasonEnum;
+        product_title: string;
+        product_id: string;
+        product_code: number;
+        online_price: number;
+        retail_price: number;
+        wholesale_price: number;
+        locked: boolean;
+      }[]
+    | null;
+  cargos: {
+    id: string;
+    description: string;
+    code: number;
+    type: CargoTypeEnum;
+    date: Date;
+    delivery_method: DeliveryMethodEnum;
+    truck_license_plate: string;
+    truck_driver: {
+      first_name: string;
+      last_name: string;
+    };
+    employee_id: string;
+    employee: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    };
+    created_at: Date;
+    updated_at: Date;
+    deleted: boolean;
+    deleted_at: Date;
+    products: {
+      product_id: string;
+      product_title: string;
+      product_code: number;
+      net_weight: number;
+      box_weight: number;
+      gross_weight: number;
+      sec_unit_amount: number;
+      online_price: number;
+      retail_price: number;
+      wholesale_price: number;
+    }[];
   }[];
 }
 
@@ -1049,6 +1195,43 @@ export type GetWarehousesResponse = Array<{
     };
   };
 }>;
+
+export interface GetWarehouseResponse {
+  id: string;
+  name: string;
+  location: {
+    type: string;
+    coordinates: [number, number];
+  };
+  address: string;
+  manager_id: string;
+  branch_id: string;
+  deleted: false;
+  are_prices_updated: boolean;
+  code: number;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  branch: {
+    id: string;
+    name: string;
+    locked: false;
+    address: string;
+    manager_id: string;
+    are_prices_updated: boolean;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+  };
+  manager?: {
+    id: string;
+    profile: {
+      id: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+}
 
 export interface GetVisitorsResponse {
   count: number;
@@ -1814,4 +1997,324 @@ export interface UpdateProductResponse {
   locked: boolean;
   purchase_price: number;
   settlement_methods: SettlementMethodEnum[];
+}
+
+export enum ProductKardexType {
+  CargoDispatch = "CARGO_DISPATCH", // مرسوله ارسالی
+  CargoReturn = "CARGO_RETURN", // مرجوعی
+  Receiving = "RECEIVING", // ورودی انبار
+  Dispatching = "DISPATCHING", // خروجی انبار
+  AdvanceInventory = "ADVANCE_INVENTORY", // موجودی قبل
+  ProduceInput = "PRODUCE_INPUT", // استفاده شده در تولید
+  ProduceOutput = "PRODUCE_OUTPUT", // تولید شده
+}
+
+export interface QueryProductKardex {
+  product_id: string;
+  from?: Date;
+  to?: Date;
+}
+
+export interface GetProductKardexResponse {
+  product_id: string;
+  product: {
+    id: string;
+    title: string;
+    net_weight: number;
+    warehouse_id: string;
+    code: number;
+  };
+  date: Date;
+  warehouse_id: string;
+  items: {
+    net_weight: number;
+    remaining: number;
+    type: ProductKardexType;
+    code: number;
+    date: Date;
+    fee: number;
+    amount: number;
+    customer: {
+      id: string;
+      code: number;
+      title: string;
+    } | null;
+    import: number | null;
+    export: number | null;
+  }[];
+}
+
+export enum TruckTypeEnum {
+  NISSAN = "NISSAN", // نیسان
+  TRUCK = "TRUCK", // کامیون
+  CAMIONET = "CAMIONET", // کامیونت
+}
+
+export interface GetTrucksResponse {
+  count: number;
+  data: {
+    id: string;
+    license_plate: string;
+    type: TruckTypeEnum;
+    capacity: number;
+    insurance_exp_date: Date;
+    body_insurance_exp_date: Date;
+    code: number;
+    created_at: Date;
+    driver: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+    };
+  }[];
+}
+
+export interface GetTruckResponse {
+  id: string;
+  license_plate: string;
+  type: string;
+  capacity: number;
+  insurance_exp_date: Date;
+  body_insurance_exp_date: Date;
+  code: number;
+  created_at: Date;
+  updated_at: Date;
+  driver: {
+    id: string;
+    kid: string;
+    first_name: string;
+    last_name: string;
+  };
+}
+
+export enum ReceivingSourceEnum {
+  Purchased = "PURCHASED", // خرید
+  Returned = "RETURNED", // برگشت از خرید
+  Inventory = "INVENTORY", // انبار گردانی
+}
+
+export interface QueryReceiving {
+  page?: number;
+  "page-size"?: number;
+  product_id?: string;
+  customer_id?: string;
+  source?: ReceivingSourceEnum;
+  from?: Date;
+  to?: Date;
+  code?: number;
+}
+
+export interface GetReceivingsResponse {
+  count: number;
+  data: {
+    id: string;
+    code: number;
+    date: Date;
+    created_at: Date;
+    license_plate: string;
+    driver_name: string;
+    source: ReceivingSourceEnum;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+      type: CustomerTypeEnum;
+      category: CustomerCategoryEnum;
+    } | null;
+    employee: {
+      id: string;
+      profile: {
+        id: string;
+        first_name: string;
+        last_name: string;
+      };
+    };
+    products_count: number;
+  };
+}
+
+export interface GetReceivingResponse {
+  id: string;
+  code: number;
+  date: Date;
+  created_at: Date;
+  license_plate: string;
+  driver_name: string;
+  source: ReceivingSourceEnum;
+  customer: {
+    id: string;
+    title: string;
+    code: number;
+    type: CustomerTypeEnum;
+    category: CustomerCategoryEnum;
+  } | null;
+  employee: {
+    id: string;
+    profile: {
+      id: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+  products_count: number;
+  products: {
+    net_weight: number;
+    gross_weight: number;
+    sec_unit_amount: number;
+    purchase_price: number;
+    origin_net_weight: number;
+    origin_gross_weight: number;
+    product_title: string;
+    product_id: string;
+  }[];
+  invoices: {
+    id: string;
+    driver_id: string | null;
+    type: InvoiceTypeEnum;
+    warehouse_id: string;
+    deleted: boolean;
+    code: number;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+    description: string | null;
+    hp_code: number | null;
+    hp_title: string | null;
+    seller_id: string;
+    customer_id: string;
+    amount: number;
+    wallet_id: string;
+    order_id: string | null;
+    date: Date | null;
+    payment_status: PaymentStatusEnum;
+    due_date: Date;
+    cargo_id: string | null;
+    dispatching_id: string | null;
+    receiving_id: string | null;
+  }[];
+  waybill: FileSummary | null;
+  veterinary: FileSummary | null;
+  origin_scale: FileSummary | null;
+  destination_scale: FileSummary | null;
+  other_files: FileSummary[];
+}
+
+export enum DispatchingSourceEnum {
+  RETURN_FROM_RECEIVING = "RETURN_FROM_RECEIVING", // برگشت از ورودی انبار
+  MANUAL = "MANUAL", // دستی
+  AUTOMATIC_FROM_CARGO = "AUTOMATIC_FROM_CARGO", // اتوماتیک با مرسوله ارسالی
+}
+
+export interface QueryDispatching {
+  page?: number;
+  "page-size"?: number;
+}
+
+export interface GetDispatchingsResponse {
+  count: number;
+  data: {
+    id: string;
+    code: number;
+    date: Date;
+    source: DispatchingSourceEnum;
+    created_at: Date;
+    license_plate: string | null;
+    driver_name: string | null;
+    employee: {
+      id: string;
+      profile: {
+        id: string;
+        first_name: string;
+        last_name: string;
+      };
+    };
+    products_count: number;
+  }[];
+}
+
+export interface GetDispatchingResponse {
+  id: string;
+  code: number;
+  date: Date;
+  created_at: Date;
+  license_plate: string | null;
+  driver_name: string | null;
+  employee: {
+    id: string;
+    profile: {
+      id: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+  products_count: number;
+  products: {
+    product_id: string;
+    product_title: string;
+    net_weight: number;
+    gross_weight: number;
+    sec_unit_amount: number;
+    box_weight: number;
+    purchase_price: number;
+  }[];
+}
+
+export interface QueryWallet {
+  page?: number;
+  "page-size"?: number;
+}
+
+export interface GetWalletsResponse {
+  count: number;
+  data: {
+    id: string;
+    customer_id: string;
+    balance: number;
+    credit_cap: number;
+    description: string | null;
+    initial_balance: number;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+    customer: {
+      id: string;
+      code: number;
+      title: string;
+      type: CustomerTypeEnum;
+      category: CustomerCategoryEnum;
+      capillary_sales_line: {
+        id: string;
+        line_number: number;
+        title: string;
+      } | null;
+    };
+  }[];
+}
+
+export interface GetWalletResponse {
+  id: string;
+  description: string | null;
+  customer_id: string | null;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  balance: number; // موجودی حسابداری
+  credit_cap: number; // حد اعتبار
+  initial_balance: number | null; // موجودی اولیه
+  customer: {
+    id: string;
+    code: number;
+    title: string;
+    type: CustomerTypeEnum;
+    category: CustomerCategoryEnum;
+    capillary_sales_line: {
+      id: string;
+      line_number: number;
+    } | null;
+  };
+  actual_balance: number; // موجودی واقعی
+  actual_credit: number; // اعتبار واقعی
+  pending_cheques_total: number; // مجموع چک‌های در انتظار
+  pending_cheques_count: number; // تعداد چک‌های در انتظار
 }
