@@ -1,12 +1,5 @@
 "use client";
 
-import { filesApi } from "@/lib/api/files";
-import type {
-  GetCategoriesResponse,
-  GetCategoryResponse,
-  TemperatureTypeEnum,
-  UpdateCategoryRequest,
-} from "@/lib/api/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,6 +19,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { filesApi } from "@/lib/api/files";
+import type {
+  GetCategoriesResponse,
+  UpdateCategoryRequest,
+} from "@/lib/api/types";
+import { TemperatureTypeEnum } from "@/lib/api/types";
 import { useCategory, useUpdateCategory } from "@/lib/hooks/api/use-categories";
 import { fileUrl } from "@/lib/utils/file-url";
 import { Loader2, Snowflake, Thermometer, Upload, X } from "lucide-react";
@@ -38,8 +37,8 @@ const temperatureLabels: Record<string, string> = {
 };
 
 const temperatureOptions: { value: TemperatureTypeEnum; label: string }[] = [
-  { value: "COLD", label: "سرد" },
-  { value: "HOT", label: "گرم" },
+  { value: TemperatureTypeEnum.COLD, label: "سرد" },
+  { value: TemperatureTypeEnum.HOT, label: "گرم" },
 ];
 
 // Helper function to flatten categories tree and filter out the current category and its children
@@ -51,10 +50,7 @@ function getAvailableParents(
   const excludeIds = new Set<string>([currentCategoryId]);
 
   // First, collect all children IDs of the current category
-  function collectChildrenIds(
-    cats: GetCategoriesResponse,
-    parentId: string
-  ) {
+  function collectChildrenIds(cats: GetCategoriesResponse, parentId: string) {
     for (const cat of cats) {
       if (cat.parent_id === parentId) {
         excludeIds.add(cat.id);
@@ -111,25 +107,25 @@ export function CategoryEditDialog({
   open,
   onOpenChange,
 }: Props) {
-  const { data: category, isLoading: isLoadingCategory } = useCategory(
-    categoryId
-  );
+  const { data: category, isLoading: isLoadingCategory } =
+    useCategory(categoryId);
   const updateMutation = useUpdateCategory();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = React.useState("");
   const [priority, setPriority] = React.useState(0);
   const [temperatureType, setTemperatureType] =
-    React.useState<TemperatureTypeEnum>("COLD");
+    React.useState<TemperatureTypeEnum>(TemperatureTypeEnum.COLD);
   const [parentId, setParentId] = React.useState<string | null>(null);
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [uploadedImageId, setUploadedImageId] = React.useState<
     string | null | ""
   >(null);
   const [isUploading, setIsUploading] = React.useState(false);
-  const [currentImage, setCurrentImage] = React.useState<
-    { url: string; thumbnail_url: string } | null
-  >(null);
+  const [currentImage, setCurrentImage] = React.useState<{
+    url: string;
+    thumbnail_url: string;
+  } | null>(null);
   const [imageRemoved, setImageRemoved] = React.useState(false);
 
   // Initialize form when category loads
@@ -151,7 +147,7 @@ export function CategoryEditDialog({
     if (!open) {
       setTitle("");
       setPriority(0);
-      setTemperatureType("COLD");
+      setTemperatureType(TemperatureTypeEnum.COLD);
       setParentId(null);
       setImageFile(null);
       setUploadedImageId(null);
@@ -254,9 +250,7 @@ export function CategoryEditDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>ویرایش دسته‌بندی</DialogTitle>
-          <DialogDescription>
-            ویرایش اطلاعات دسته‌بندی
-          </DialogDescription>
+          <DialogDescription>ویرایش اطلاعات دسته‌بندی</DialogDescription>
         </DialogHeader>
 
         {isLoadingCategory ? (
@@ -395,7 +389,9 @@ export function CategoryEditDialog({
                   <SelectValue placeholder="بدون والد (دسته‌بندی اصلی)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">بدون والد (دسته‌بندی اصلی)</SelectItem>
+                  <SelectItem value="none">
+                    بدون والد (دسته‌بندی اصلی)
+                  </SelectItem>
                   {availableParents.map((parent) => (
                     <SelectItem key={parent.id} value={parent.id}>
                       {parent.title}
@@ -434,4 +430,3 @@ export function CategoryEditDialog({
     </Dialog>
   );
 }
-
