@@ -27,7 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { CheckStatusEnum, QueryCheck } from "@/lib/api/types";
+import type { QueryCheck } from "@/lib/api/types";
+import { CheckStatusEnum } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 type CheckFilterDialogProps = {
@@ -42,23 +43,23 @@ const pageSizeOptions = [10, 20, 30, 40, 50, 100];
 
 const statusOptions: { value: CheckStatusEnum; label: string }[] = [
   {
-    value: "RECEIVED_BY_ACCOUNTING",
+    value: CheckStatusEnum.RECEIVED_BY_ACCOUNTING,
     label: "دریافت چک توسط حسابداری",
   },
   {
-    value: "DELIVERED_TO_PROCUREMENT",
+    value: CheckStatusEnum.DELIVERED_TO_PROCUREMENT,
     label: "تحویل به کارپرداز",
   },
   {
-    value: "DELIVERED_TO_BANK",
+    value: CheckStatusEnum.DELIVERED_TO_BANK,
     label: "تحویل به بانک",
   },
   {
-    value: "CLEARED",
+    value: CheckStatusEnum.CLEARED,
     label: "پاس شده",
   },
   {
-    value: "RETURNED",
+    value: CheckStatusEnum.RETURNED,
     label: "برگشت خورده",
   },
 ];
@@ -274,4 +275,3 @@ export function CheckFilterDialog({
     </Dialog>
   );
 }
-
