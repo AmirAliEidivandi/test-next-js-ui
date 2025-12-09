@@ -18,6 +18,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -26,17 +27,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TableSkeleton } from "@/components/ui/table-skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useCustomers, useCapillarySalesLines } from "@/lib/hooks/api/use-customers";
-import { useSellers } from "@/lib/hooks/api/use-employees";
 import type { QueryCustomer } from "@/lib/api/types";
+import {
+  useCapillarySalesLines,
+  useCustomers,
+} from "@/lib/hooks/api/use-customers";
+import { useSellers } from "@/lib/hooks/api/use-employees";
 import { CustomerFilterDialog } from "./_components/customer-filter-dialog";
-import { TableSkeleton } from "@/components/ui/table-skeleton";
-import { Skeleton } from "@/components/ui/skeleton";
 
 // Category labels
 const categoryLabels: Record<string, string> = {
@@ -154,7 +157,7 @@ export default function CustomersPage() {
           <CustomerFilterDialog
             open={filterDialogOpen}
             onOpenChange={setFilterDialogOpen}
-            salesLines={salesLines}
+            salesLines={salesLines ?? null}
             sellers={sellers}
             filters={filters}
             onApply={handleFilterApply}
