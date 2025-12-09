@@ -40,9 +40,9 @@ const paymentMethodLabels: Record<
   NonNullable<QueryCustomerRequest["payment_method"]>,
   string
 > = {
-  CASH: "نقدی",
   ONLINE: "آنلاین",
   WALLET: "کیف پول",
+  BANK_RECEIPT: "فیش بانکی",
 };
 
 const statusLabels: Record<
