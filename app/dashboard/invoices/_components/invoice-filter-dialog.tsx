@@ -32,6 +32,7 @@ import type {
   GetSellersResponse,
   QueryInvoice,
 } from "@/lib/api/types";
+import { InvoiceTypeEnum, PaymentStatusEnum } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 type InvoiceFilterDialogProps = {
@@ -48,18 +49,18 @@ const paymentStatusOptions: {
   value: NonNullable<QueryInvoice["payment_status"]>;
   label: string;
 }[] = [
-  { value: "PAID", label: "پرداخت شده" },
-  { value: "NOT_PAID", label: "پرداخت نشده" },
-  { value: "PARTIALLY_PAID", label: "پرداخت جزئی" },
+  { value: PaymentStatusEnum.PAID, label: "پرداخت شده" },
+  { value: PaymentStatusEnum.NOT_PAID, label: "پرداخت نشده" },
+  { value: PaymentStatusEnum.PARTIALLY_PAID, label: "پرداخت جزئی" },
 ];
 
 const invoiceTypeOptions: {
   value: NonNullable<QueryInvoice["type"]>;
   label: string;
 }[] = [
-  { value: "PURCHASE", label: "خرید" },
-  { value: "RETURN_FROM_PURCHASE", label: "مرجوعی خرید" },
-  { value: "SELL", label: "فروش" },
+  { value: InvoiceTypeEnum.PURCHASE, label: "خرید" },
+  { value: InvoiceTypeEnum.RETURN_FROM_PURCHASE, label: "مرجوعی خرید" },
+  { value: InvoiceTypeEnum.SELL, label: "فروش" },
 ];
 
 const pageSizeOptions = [10, 20, 30, 40, 50, 100];

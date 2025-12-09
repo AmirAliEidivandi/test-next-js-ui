@@ -33,6 +33,7 @@ import type {
   GetSellersResponse,
   QueryOrder,
 } from "@/lib/api/types";
+import { DeliveryMethodEnum, OrderStepEnum } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 type OrderFilterDialogProps = {
@@ -47,26 +48,29 @@ type OrderFilterDialogProps = {
 };
 
 const stepOptions: { value: QueryOrder["step"]; label: string }[] = [
-  { value: "SELLER", label: "فروشنده" },
-  { value: "SALES_MANAGER", label: "مدیر فروش" },
-  { value: "PROCESSING", label: "آماده‌سازی" },
-  { value: "INVENTORY", label: "انبار" },
-  { value: "ACCOUNTING", label: "حسابداری" },
-  { value: "CARGO", label: "مرسوله" },
-  { value: "PARTIALLY_DELIVERED", label: "تحویل جزئی" },
-  { value: "DELIVERED", label: "تحویل شده" },
-  { value: "RETURNED", label: "مرجوعی کامل" },
-  { value: "PARTIALLY_RETURNED", label: "مرجوعی جزئی" },
+  { value: OrderStepEnum.SELLER, label: "فروشنده" },
+  { value: OrderStepEnum.SALES_MANAGER, label: "مدیر فروش" },
+  { value: OrderStepEnum.PROCESSING, label: "آماده‌سازی" },
+  { value: OrderStepEnum.INVENTORY, label: "انبار" },
+  { value: OrderStepEnum.ACCOUNTING, label: "حسابداری" },
+  { value: OrderStepEnum.CARGO, label: "مرسوله" },
+  { value: OrderStepEnum.PARTIALLY_DELIVERED, label: "تحویل جزئی" },
+  { value: OrderStepEnum.DELIVERED, label: "تحویل شده" },
+  { value: OrderStepEnum.RETURNED, label: "مرجوعی کامل" },
+  { value: OrderStepEnum.PARTIALLY_RETURNED, label: "مرجوعی جزئی" },
 ];
 
 const deliveryMethodOptions: {
   value: NonNullable<QueryOrder["delivery_method"]>;
   label: string;
 }[] = [
-  { value: "FREE_OUR_TRUCK", label: "رایگان با ماشین شرکت" },
-  { value: "FREE_OTHER_SERVICES", label: "رایگان با سرویس دیگر" },
-  { value: "PAID", label: "ارسال با هزینه مشتری" },
-  { value: "AT_INVENTORY", label: "تحویل درب انبار" },
+  { value: DeliveryMethodEnum.FREE_OUR_TRUCK, label: "رایگان با ماشین شرکت" },
+  {
+    value: DeliveryMethodEnum.FREE_OTHER_SERVICES,
+    label: "رایگان با سرویس دیگر",
+  },
+  { value: DeliveryMethodEnum.PAID, label: "ارسال با هزینه مشتری" },
+  { value: DeliveryMethodEnum.AT_INVENTORY, label: "تحویل درب انبار" },
 ];
 
 const booleanOptions = [
