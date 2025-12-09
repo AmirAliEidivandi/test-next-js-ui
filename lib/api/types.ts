@@ -1115,6 +1115,7 @@ export enum CustomerRequestStatusEnum {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
   CANCELLED = "CANCELLED",
+  DELIVERED = "DELIVERED",
 }
 
 export interface QueryCustomerRequest {

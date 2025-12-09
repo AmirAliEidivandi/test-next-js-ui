@@ -28,9 +28,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { QueryCustomerRequest } from "@/lib/api/types";
 import { useCustomerRequests } from "@/lib/hooks/api/use-customer-requests";
 import { useCustomers } from "@/lib/hooks/api/use-customers";
-import type { QueryCustomerRequest } from "@/lib/api/types";
 import { Eye } from "lucide-react";
 
 import { CustomerRequestFilterDialog } from "./_components/customer-request-filter-dialog";
@@ -52,6 +52,8 @@ const statusLabels: Record<
   CONVERTED_TO_ORDER: "تبدیل شده به سفارش",
   APPROVED: "تایید شده",
   REJECTED: "رد شده",
+  CANCELLED: "لغو شده",
+  DELIVERED: "تحویل شده",
 };
 
 const toPersianDigits = (value: string) =>
@@ -83,7 +85,11 @@ export default function CustomerRequestsPage() {
     ...filters,
     page: currentPage,
   };
-  const { data: customerRequests, isLoading, error } = useCustomerRequests(query);
+  const {
+    data: customerRequests,
+    isLoading,
+    error,
+  } = useCustomerRequests(query);
 
   const totalPages = customerRequests
     ? Math.ceil(customerRequests.count / pageSize)
@@ -134,7 +140,7 @@ export default function CustomerRequestsPage() {
         <CustomerRequestFilterDialog
           open={filterDialogOpen}
           onOpenChange={setFilterDialogOpen}
-          customers={customers}
+          customers={customers ?? null}
           filters={filters}
           onApply={handleFilterApply}
           onClear={handleClearFilters}
