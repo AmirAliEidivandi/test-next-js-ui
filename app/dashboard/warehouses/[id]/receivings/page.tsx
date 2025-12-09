@@ -2,7 +2,7 @@
 
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
-import { Eye, ArrowRight } from "lucide-react";
+import { ArrowRight, Eye } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
@@ -22,9 +22,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ReceivingSourceEnum } from "@/lib/api/types";
 import { useReceivings } from "@/lib/hooks/api/use-receivings";
 import { useWarehouse } from "@/lib/hooks/api/use-warehouses";
-import { ReceivingSourceEnum } from "@/lib/api/types";
 
 const toPersianDigits = (value: number | string): string => {
   const str = typeof value === "number" ? value.toString() : value;
@@ -54,7 +54,11 @@ export default function ReceivingsPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
 
   const { data: warehouse } = useWarehouse(warehouseId);
-  const { data: receivings, isLoading, error } = useReceivings(warehouseId, {
+  const {
+    data: receivings,
+    isLoading,
+    error,
+  } = useReceivings(warehouseId, {
     page: currentPage,
     "page-size": 20,
   });
@@ -68,7 +72,9 @@ export default function ReceivingsPage() {
   }, [error]);
 
   const handleViewReceiving = (receivingId: string) => {
-    router.push(`/dashboard/warehouses/${warehouseId}/receivings/${receivingId}`);
+    router.push(
+      `/dashboard/warehouses/${warehouseId}/receivings/${receivingId}`
+    );
   };
 
   if (isLoading && !receivings) {
@@ -109,9 +115,7 @@ export default function ReceivingsPage() {
     );
   }
 
-  const totalPages = receivings
-    ? Math.ceil(receivings.count / 20)
-    : 0;
+  const totalPages = receivings ? Math.ceil(receivings.count / 20) : 0;
 
   return (
     <div className="space-y-4">
@@ -156,12 +160,15 @@ export default function ReceivingsPage() {
                   </TableCell>
                   <TableCell>{formatDate(receiving.date)}</TableCell>
                   <TableCell>
-                    {receivingSourceLabels[receiving.source] || receiving.source}
+                    {receivingSourceLabels[receiving.source] ||
+                      receiving.source}
                   </TableCell>
                   <TableCell>
                     {receiving.customer ? (
                       <div>
-                        <div className="font-medium">{receiving.customer.title}</div>
+                        <div className="font-medium">
+                          {receiving.customer.title}
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           کد: {toPersianDigits(receiving.customer.code)}
                         </div>
@@ -219,4 +226,3 @@ export default function ReceivingsPage() {
     </div>
   );
 }
-

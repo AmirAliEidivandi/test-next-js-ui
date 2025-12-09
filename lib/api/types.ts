@@ -2132,7 +2132,7 @@ export interface GetReceivingsResponse {
       };
     };
     products_count: number;
-  };
+  }[];
 }
 
 export interface GetReceivingResponse {
@@ -2241,6 +2241,7 @@ export interface GetDispatchingResponse {
   created_at: Date;
   license_plate: string | null;
   driver_name: string | null;
+  source: DispatchingSourceEnum;
   employee: {
     id: string;
     profile: {

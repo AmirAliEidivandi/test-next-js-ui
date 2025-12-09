@@ -24,8 +24,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useDispatching } from "@/lib/hooks/api/use-dispatchings";
 import { DispatchingSourceEnum } from "@/lib/api/types";
+import { useDispatching } from "@/lib/hooks/api/use-dispatchings";
 
 const toPersianDigits = (value: number | string): string => {
   const str = typeof value === "number" ? value.toString() : value;
@@ -276,4 +276,3 @@ export default function DispatchingDetailPage() {
     </div>
   );
 }
-
