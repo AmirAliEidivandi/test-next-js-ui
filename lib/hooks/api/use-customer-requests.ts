@@ -17,3 +17,11 @@ export function useCustomerRequests(filters?: QueryCustomerRequest) {
     enabled: true,
   });
 }
+
+export function useCustomerRequest(id: string | null) {
+  return useQuery({
+    queryKey: customerRequestKeys.detail(id!),
+    queryFn: () => customerRequestsApi.getCustomerRequest(id!),
+    enabled: !!id,
+  });
+}

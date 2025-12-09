@@ -1,6 +1,7 @@
 import { apiClient } from "./client";
 import type {
   GetCustomerRequestsResponse,
+  GetCustomerRequestResponse,
   QueryCustomerRequest,
 } from "./types";
 
@@ -47,5 +48,9 @@ export const customerRequestsApi = {
     }`;
 
     return apiClient.get<GetCustomerRequestsResponse>(endpoint);
+  },
+  async getCustomerRequest(id: string): Promise<GetCustomerRequestResponse> {
+    const endpoint = `/customer-requests/${id}`;
+    return apiClient.get<GetCustomerRequestResponse>(endpoint);
   },
 };

@@ -32,6 +32,7 @@ import type { QueryCustomerRequest } from "@/lib/api/types";
 import { useCustomerRequests } from "@/lib/hooks/api/use-customer-requests";
 import { useCustomers } from "@/lib/hooks/api/use-customers";
 import { Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { CustomerRequestFilterDialog } from "./_components/customer-request-filter-dialog";
 
@@ -69,6 +70,7 @@ const formatDate = (date?: Date) => {
 };
 
 export default function CustomerRequestsPage() {
+  const router = useRouter();
   const [filters, setFilters] = React.useState<QueryCustomerRequest>({
     "page-size": 20,
   });
@@ -212,7 +214,9 @@ export default function CustomerRequestsPage() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => {
-                              // TODO: navigate to request detail view when available
+                              router.push(
+                                `/dashboard/customer-requests/${request.id}`
+                              );
                             }}
                           >
                             <Eye className="size-4" />

@@ -53,6 +53,7 @@ export interface VerifyTokenResponse {
 export interface FileSummary {
   id: string; // file id
   url: string; // file url
+  name: string; // file name
   thumbnail_url: string; // thumbnail url
 }
 
@@ -1104,18 +1105,18 @@ export interface GetInvoicesResponse {
 }
 
 export enum PaymentMethodEnum {
-  CASH = "CASH",
-  ONLINE = "ONLINE",
-  WALLET = "WALLET",
+  ONLINE = "ONLINE", // آنلاین
+  WALLET = "WALLET", // کیف پول
+  BANK_RECEIPT = "BANK_RECEIPT", // فیش بانکی
 }
 
 export enum CustomerRequestStatusEnum {
-  PENDING = "PENDING",
-  CONVERTED_TO_ORDER = "CONVERTED_TO_ORDER",
-  APPROVED = "APPROVED",
-  REJECTED = "REJECTED",
-  CANCELLED = "CANCELLED",
-  DELIVERED = "DELIVERED",
+  PENDING = "PENDING", // درحال انتظار
+  CONVERTED_TO_ORDER = "CONVERTED_TO_ORDER", // تبدیل به سفارش
+  APPROVED = "APPROVED", // تایید شده
+  REJECTED = "REJECTED", // رد شده
+  CANCELLED = "CANCELLED", // لغو شده
+  DELIVERED = "DELIVERED", // تحویل شده
 }
 
 export interface QueryCustomerRequest {
@@ -1547,6 +1548,54 @@ export interface GetReturnRequestsResponse {
     return_items_count: number;
   }[];
   count: number;
+}
+
+export interface GetReturnRequestResponse {
+  id: string;
+  reason: ReturnRequestReasonEnum;
+  description: string | null;
+  status: ReturnRequestStatusEnum;
+  customer: {
+    id: string;
+    title: string;
+    code: number;
+  };
+  representative_name: string;
+  order: {
+    id: string;
+    code: number;
+    step: OrderStepEnum;
+    created_at: Date;
+    address: string;
+  };
+  request: {
+    id: string;
+    code: number;
+    address: string;
+    status: CustomerRequestStatusEnum;
+    created_at: Date;
+    updated_at: Date;
+    payment_method: PaymentMethodEnum;
+  };
+  person: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+      mobile: string;
+      username: string;
+    };
+  };
+  return_items: {
+    request_item_id: string;
+    product_id: string;
+    product_title: string;
+    weight: number;
+    online_price: number;
+    total_price: number;
+  }[];
 }
 
 export interface QueryReminder {
@@ -2319,4 +2368,398 @@ export interface GetWalletResponse {
   actual_credit: number; // اعتبار واقعی
   pending_cheques_total: number; // مجموع چک‌های در انتظار
   pending_cheques_count: number; // تعداد چک‌های در انتظار
+}
+
+export interface GetCustomerRequestResponse {
+  id: string;
+  code: number;
+  status: CustomerRequestStatusEnum;
+  payment_method: PaymentMethodEnum;
+  total_price: number;
+  created_at: Date;
+  description: string | null;
+  freight_price: number; // هزینه باربری
+  address: string;
+  customer: {
+    id: string;
+    code: number;
+    title: string;
+    phone: string;
+    address: string;
+  };
+  request_items: {
+    product_id: string;
+    product_title: string;
+    product_code: number;
+    weight: number;
+    online_price: number;
+    total_price: number;
+    images: FileSummary[];
+  }[];
+  person: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+      mobile: string;
+      username: string;
+    };
+  };
+  representative_name: string;
+  orders:
+    | {
+        id: string;
+        code: number;
+        step: OrderStepEnum;
+        created_at: Date;
+        delivery_method: DeliveryMethodEnum;
+        payment_status: PaymentStatusEnum;
+        address: string;
+        ordered_basket: {
+          product_id: string;
+          product_title: string;
+          product_code: number;
+          weight: number;
+          online_price: number;
+          price: number;
+          fulfilled_weight: number;
+          fulfilled: boolean;
+          returned_weight: number;
+          sec_unit_amount: number;
+          cancelled_weight: number;
+          inventory_net_weight: number;
+        }[];
+        invoices: {
+          id: string;
+          code: number;
+          amount: number;
+          date: Date;
+          description: string | null;
+          payment_status: PaymentStatusEnum;
+        }[];
+      }[]
+    | null;
+}
+
+export enum OrderChangeTypeEnum {
+  CREATED = "CREATED", // ایجاد سفارش
+  STEP_CHANGED = "STEP_CHANGED", // تغییر مرحله
+  PAYMENT_STATUS_CHANGED = "PAYMENT_STATUS_CHANGED", // تغییر وضعیت پرداخت
+  FULFILLED_STATUS_CHANGED = "FULFILLED_STATUS_CHANGED", // تغییر وضعیت تحویل
+  ARCHIVED_STATUS_CHANGED = "ARCHIVED_STATUS_CHANGED", // تغییر وضعیت آرشیو
+  DELIVERY_DATE_CHANGED = "DELIVERY_DATE_CHANGED", // تغییر تاریخ تحویل
+  DELIVERY_METHOD_CHANGED = "DELIVERY_METHOD_CHANGED", // تغییر روش تحویل
+  SELLER_CHANGED = "SELLER_CHANGED", // تغییر فروشنده
+  VISITOR_CHANGED = "VISITOR_CHANGED", // تغییر نماینده
+  WAREHOUSE_CHANGED = "WAREHOUSE_CHANGED", // تغییر انبار
+  PRODUCTS_CHANGED = "PRODUCTS_CHANGED", // تغییر محصولات
+  CUSTOMER_CHANGED = "CUSTOMER_CHANGED", // تغییر مشتری
+  DELETED = "DELETED", // حذف سفارش
+  RESTORED = "RESTORED", // بازیابی سفارش
+}
+
+export interface QueryOrderHistory {
+  page?: number;
+  "page-size"?: number;
+}
+
+export interface GetOrdersHistoryResponse {
+  count: number;
+  data: {
+    id: string;
+    order_id: string;
+    old_order: {
+      id: string;
+      code: number;
+      step: OrderStepEnum;
+      payment_status: PaymentStatusEnum;
+      created_at: Date;
+      updated_at: Date;
+      delivery_date: Date;
+    } | null;
+    new_order: {
+      id: string;
+      code: number;
+      step: OrderStepEnum;
+      payment_status: PaymentStatusEnum;
+      created_at: Date;
+      updated_at: Date;
+      delivery_date: Date;
+    };
+    order: {
+      id: string;
+      code: number;
+      step: OrderStepEnum;
+      payment_status: PaymentStatusEnum;
+      created_at: Date;
+      updated_at: Date;
+      delivery_date: Date;
+    };
+    payment_status_before: PaymentStatusEnum;
+    payment_status_after: PaymentStatusEnum;
+    step_before: OrderStepEnum;
+    step_after: OrderStepEnum;
+    by_system: boolean;
+    created_at: Date;
+    updated_at: Date;
+    change_type: OrderChangeTypeEnum;
+    delivery_date_before: Date;
+    delivery_date_after: Date;
+    delivery_method_before: DeliveryMethodEnum;
+    delivery_method_after: DeliveryMethodEnum;
+  }[];
+}
+
+export interface GetOrderHistoryResponse {
+  id: string;
+  order_id: string;
+  old_order: {
+    id: string;
+    code: number;
+    step: OrderStepEnum;
+    bought: boolean;
+    cargos: any[];
+    ordered_basket: {
+      id: "ef2ee6a7-ee3e-45ad-80f8-dde0b8439550";
+      price: 7250000;
+      weight: 20;
+      product: {
+        id: "96267434-7eae-483a-9201-de2582730904";
+        code: 1006;
+        title: "سردست گوسفند گرم";
+        locked: false;
+        deleted: false;
+        hp_code: 10007;
+        hp_title: "سردست گوسفند گرم";
+        is_online: true;
+        box_weight: 0;
+        created_at: "2025-06-01T11:21:50.217Z";
+        deleted_at: null;
+        is_special: true;
+        net_weight: -20;
+        updated_at: "2025-12-04T11:47:34.765Z";
+        description: "سردست گوسفند گرم بخش جلویی لاشه است که ترکیبی از گوشت لطیف، چربی متعادل و استخوان دارد و به‌خاطر طعم قوی و آب‌دار بودن معروف است. این قسمت برای خورشت، آبگوشت و پخت‌های طولانی عالی و از نظر قیمت هم انتخاب اقتصادی‌تر و خوش‌عطرتر نسبت به ران محسوب می‌شود.";
+        gross_weight: -25;
+        online_price: 7250000;
+        retail_price: 7000000;
+        warehouse_id: "cca265b7-d095-4897-a145-fd4a52ff927f";
+        invoice_title: null;
+        purchase_price: 1;
+        sec_unit_amount: -5;
+        wholesale_price: 6500000;
+        origin_net_weight: 0;
+        settlement_methods: ["CASH"];
+        origin_gross_weight: 0;
+      };
+      order_id: "bb003f93-51eb-446c-bf99-187cdab7f3bd";
+      fulfilled: true;
+      product_id: "96267434-7eae-483a-9201-de2582730904";
+      online_price: 7250000;
+      retail_price: 7000000;
+      returned_weight: 0;
+      sec_unit_amount: null;
+      wholesale_price: 6500000;
+      cancelled_weight: 0;
+      fulfilled_weight: 20;
+      inventory_net_weight: 0;
+    }[];
+    payment_status: PaymentStatusEnum;
+    delivery_method: DeliveryMethodEnum;
+    hp_invoice_code: number;
+    in_person_order: boolean;
+    consumption_time: Date | null;
+    order_creator_id: string;
+    customer_request_id: string | null;
+    not_purchased_reason: NotPurchasedReasonEnum | null;
+    address: string;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+      type: CustomerTypeEnum;
+      phone: string;
+      address: string;
+      category: CustomerCategoryEnum;
+    };
+    person: {
+      id: string;
+      kid: string;
+      title: string;
+    } | null;
+    seller: {
+      id: string;
+      kid: string;
+    } | null;
+    warehouse: {
+      id: string;
+      code: number;
+      name: string;
+      address: string;
+    } | null;
+    created_at: Date;
+    updated_at: Date;
+    delivery_date: Date | null;
+  } | null;
+  new_order: {
+    id: string;
+    code: number;
+    step: OrderStepEnum;
+    bought: boolean;
+    address: string;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+      type: CustomerTypeEnum;
+      phone: string;
+      address: string;
+      category: CustomerCategoryEnum;
+    };
+    person: {
+      id: string;
+      kid: string;
+      title: string;
+    } | null;
+    seller: {
+      id: string;
+      kid: string;
+    } | null;
+    warehouse: {
+      id: string;
+      code: number;
+      name: string;
+      address: string;
+    } | null;
+    created_at: Date;
+    updated_at: Date;
+    delivery_date: Date | null;
+    cargos: any[];
+    ordered_basket:
+      | {
+          id: string;
+          price: number;
+          weight: number;
+          product: {
+            id: string;
+            code: number;
+            title: string;
+            locked: boolean;
+            deleted: boolean;
+            hp_code: number;
+            hp_title: string;
+            is_online: boolean;
+            box_weight: number;
+            created_at: Date;
+            deleted_at: null;
+            is_special: boolean;
+            net_weight: number;
+            updated_at: Date;
+            description: string;
+            gross_weight: number;
+            online_price: number;
+            retail_price: number;
+            warehouse_id: string;
+            invoice_title: string | null;
+            purchase_price: number;
+            sec_unit_amount: number | null;
+            wholesale_price: number;
+            origin_net_weight: number;
+            settlement_methods: SettlementMethodEnum[];
+            origin_gross_weight: number;
+          };
+          order_id: string;
+          fulfilled: boolean;
+          product_id: string;
+          online_price: number;
+          retail_price: number;
+          returned_weight: number;
+          sec_unit_amount: number | null;
+          wholesale_price: number;
+          cancelled_weight: number;
+          fulfilled_weight: number;
+          inventory_net_weight: number;
+        }[]
+      | null;
+    payment_status: PaymentStatusEnum;
+    delivery_method: DeliveryMethodEnum;
+    hp_invoice_code: number;
+    in_person_order: boolean;
+    consumption_time: Date | null;
+    order_creator_id: string;
+    customer_request_id: string | null;
+    not_purchased_reason: NotPurchasedReasonEnum | null;
+  };
+  employee_id: string;
+  by_system: boolean;
+  change_type: OrderChangeTypeEnum;
+  step_before: OrderStepEnum;
+  step_after: OrderStepEnum;
+  payment_status_before: PaymentStatusEnum;
+  payment_status_after: PaymentStatusEnum;
+  fulfilled_before: boolean;
+  fulfilled_after: boolean;
+  archived_before: boolean;
+  archived_after: boolean;
+  delivery_date_before: Date | null;
+  delivery_date_after: Date | null;
+  delivery_method_before: DeliveryMethodEnum;
+  delivery_method_after: DeliveryMethodEnum;
+  seller_id_before: string;
+  seller_id_after: string;
+  deleted_changed: boolean;
+  reason: string;
+  ip_address: string;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+  order: {
+    id: string;
+    code: number;
+    customer: {
+      id: string;
+      title: string;
+    };
+    person: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+      };
+    };
+    ordered_basket:
+      | {
+          id: string;
+          order_id: string;
+          product_id: string;
+          price: number;
+          weight: number;
+          retail_price: number;
+          wholesale_price: number;
+          online_price: number;
+          inventory_net_weight: number;
+          fulfilled_weight: number;
+          cancelled_weight: number;
+          returned_weight: number;
+          fulfilled: boolean;
+          sec_unit_amount: number | null;
+          product: {
+            id: string;
+            title: string;
+          };
+        }[]
+      | null;
+    failed_basket: [];
+  };
+  employee: {
+    id: string;
+    profile: {
+      first_name: string;
+      last_name: string;
+      email: string;
+    };
+  };
 }

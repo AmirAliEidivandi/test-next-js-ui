@@ -8,6 +8,7 @@ export const returnRequestKeys = {
   lists: () => [...returnRequestKeys.all, "list"] as const,
   list: (filters?: QueryReturnRequest) =>
     [...returnRequestKeys.lists(), filters] as const,
+  detail: (id: string) => [...returnRequestKeys.all, "detail", id] as const,
 };
 
 // Hooks
@@ -16,6 +17,14 @@ export function useReturnRequests(filters?: QueryReturnRequest) {
     queryKey: returnRequestKeys.list(filters),
     queryFn: () => returnRequestsApi.getReturnRequests(filters),
     enabled: true,
+  });
+}
+
+export function useReturnRequest(id: string | null) {
+  return useQuery({
+    queryKey: returnRequestKeys.detail(id!),
+    queryFn: () => returnRequestsApi.getReturnRequest(id!),
+    enabled: !!id,
   });
 }
 

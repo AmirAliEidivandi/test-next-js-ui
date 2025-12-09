@@ -1,5 +1,9 @@
 import { apiClient } from "./client";
-import { GetReturnRequestsResponse, QueryReturnRequest } from "./types";
+import {
+  GetReturnRequestResponse,
+  GetReturnRequestsResponse,
+  QueryReturnRequest,
+} from "./types";
 
 const buildReturnRequestQueryString = (query?: QueryReturnRequest) => {
   const params = new URLSearchParams();
@@ -22,5 +26,9 @@ export const returnRequestsApi = {
     const queryString = buildReturnRequestQueryString(query);
     const endpoint = `/return-requests${queryString ? `?${queryString}` : ""}`;
     return apiClient.get<GetReturnRequestsResponse>(endpoint);
+  },
+  async getReturnRequest(id: string): Promise<GetReturnRequestResponse> {
+    const endpoint = `/return-requests/${id}`;
+    return apiClient.get<GetReturnRequestResponse>(endpoint);
   },
 };

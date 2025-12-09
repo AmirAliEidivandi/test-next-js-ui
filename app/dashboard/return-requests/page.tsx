@@ -3,6 +3,7 @@
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
 import { Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -56,6 +57,7 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function ReturnRequestsPage() {
+  const router = useRouter();
   const [filters, setFilters] = React.useState<QueryReturnRequest>({
     "page-size": 20,
   });
@@ -198,8 +200,9 @@ export default function ReturnRequestsPage() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => {
-                              // TODO: Implement view details
-                              toast.info("جزئیات درخواست مرجوعی");
+                              router.push(
+                                `/dashboard/return-requests/${request.id}`
+                              );
                             }}
                           >
                             <Eye className="size-4" />

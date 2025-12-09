@@ -45,6 +45,23 @@ const getPageTitle = (pathname: string): string => {
     "/dashboard/statistics/sellers": "آمار فروشندگان",
   };
 
+  // Handle dynamic routes
+  if (pathname.startsWith("/dashboard/customer-requests/") && pathname !== "/dashboard/customer-requests") {
+    return "جزئیات درخواست مشتری";
+  }
+  if (pathname.startsWith("/dashboard/return-requests/") && pathname !== "/dashboard/return-requests") {
+    return "جزئیات درخواست مرجوعی";
+  }
+  if (pathname.startsWith("/dashboard/orders/history/") && pathname !== "/dashboard/orders/history") {
+    return "جزئیات تاریخچه سفارش";
+  }
+  if (pathname.startsWith("/dashboard/orders/") && pathname !== "/dashboard/orders" && pathname !== "/dashboard/orders/history") {
+    return "جزئیات سفارش";
+  }
+  if (pathname.startsWith("/dashboard/wallets/") && pathname !== "/dashboard/wallets" && pathname !== "/dashboard/wallets/history") {
+    return "جزئیات کیف پول";
+  }
+
   return titleMap[pathname] || "پنل مدیریت";
 };
 
