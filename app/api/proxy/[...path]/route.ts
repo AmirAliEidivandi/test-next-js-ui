@@ -57,7 +57,9 @@ async function handleProxyRequest(
     // Build the target URL
     const path = pathSegments.join("/");
     const searchParams = request.nextUrl.searchParams.toString();
-    const targetUrl = `${API_BASE_URL}/${path}${searchParams ? `?${searchParams}` : ""}`;
+    const targetUrl = `${API_BASE_URL}/${path}${
+      searchParams ? `?${searchParams}` : ""
+    }`;
 
     // Check if request is multipart/form-data (file upload)
     const contentType = request.headers.get("content-type") || "";
@@ -192,6 +194,24 @@ async function handleProxyRequest(
               );
             }
 
+            // Check if response is PDF or other binary data
+            const retryContentType =
+              retryResponse.headers.get("content-type") || "";
+            if (
+              retryContentType.includes("application/pdf") ||
+              retryContentType.includes("application/octet-stream")
+            ) {
+              const blob = await retryResponse.blob();
+              return new NextResponse(blob, {
+                status: retryResponse.status,
+                headers: {
+                  "Content-Type": retryContentType,
+                  "Content-Disposition":
+                    retryResponse.headers.get("content-disposition") || "",
+                },
+              });
+            }
+
             const retryData = await retryResponse.json();
             return NextResponse.json(retryData);
           }
@@ -228,6 +248,23 @@ async function handleProxyRequest(
       );
     }
 
+    // Check if response is PDF or other binary data
+    const responseContentType = response.headers.get("content-type") || "";
+    if (
+      responseContentType.includes("application/pdf") ||
+      responseContentType.includes("application/octet-stream")
+    ) {
+      const blob = await response.blob();
+      return new NextResponse(blob, {
+        status: response.status,
+        headers: {
+          "Content-Type": responseContentType,
+          "Content-Disposition":
+            response.headers.get("content-disposition") || "",
+        },
+      });
+    }
+
     // Return successful response
     const data = await response.json();
     return NextResponse.json(data);
@@ -235,11 +272,9 @@ async function handleProxyRequest(
     console.error("Proxy error:", error);
     return NextResponse.json(
       {
-        message:
-          error instanceof Error ? error.message : "خطای اتصال به سرور",
+        message: error instanceof Error ? error.message : "خطای اتصال به سرور",
       },
       { status: 500 }
     );
   }
 }
-

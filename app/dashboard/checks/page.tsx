@@ -114,7 +114,7 @@ const bankLabels: Record<BankEnum, string> = {
   MEHR_EGHTESAD: "مهر اقتصاد",
   TOSEE_TAAVON: "توسعه تعاون",
   EXPORT_DEVELOPMENT_BANK: "توسعه صادرات",
-  TOSEE_CREDIT: "توسعه اعتبارات",
+  TOSEE_CREDIT: "توسعه اعتباری",
   MEHR_IRAN: "مهر ایران",
   NOOR: "نور",
   OTHER: "سایر",

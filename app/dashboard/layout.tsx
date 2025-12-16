@@ -40,9 +40,25 @@ const getPageTitle = (pathname: string): string => {
     "/dashboard/checks": "چک ها",
     "/dashboard/reminders": "یادآور ها",
     "/dashboard/production/produces": "لیست تولیدات",
-    "/dashboard/statistics/customers": "آمار مشتریان",
-    "/dashboard/statistics/orders": "آمار سفارشات",
-    "/dashboard/statistics/sellers": "آمار فروشندگان",
+    // آمار مشتریان
+    "/dashboard/statistics/customers": "مشتریان آنلاین",
+    "/dashboard/statistics/customers/inactive": "مشتریان غیرفعال",
+    "/dashboard/statistics/customers/without-purchase": "مشتریان بدون خرید",
+    "/dashboard/statistics/customers/actual-debt": "بدهی واقعی مشتریان",
+    // آمار فروشندگان
+    "/dashboard/statistics/sellers": "گزارش فروشندگان",
+    // آمار محصولات
+    "/dashboard/statistics/products/summary": "خلاصه محصولات",
+    "/dashboard/statistics/products/period": "آمار دوره‌ای محصولات",
+    "/dashboard/statistics/products/negative-inventory": "موجودی منفی",
+    "/dashboard/statistics/products/returned": "محصولات مرجوعی",
+    // آمار سفارشات
+    "/dashboard/statistics/orders/returned": "سفارشات مرجوعی",
+    // آمار فروش
+    "/dashboard/statistics/sales/categories": "فروش دسته‌بندی‌ها",
+    "/dashboard/statistics/sales/day-of-purchase": "روزهای خرید",
+    // آمار پرداخت‌ها
+    "/dashboard/statistics/payments/status": "وضعیت پرداخت‌ها",
   };
 
   // Handle dynamic routes

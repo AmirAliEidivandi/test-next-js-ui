@@ -183,9 +183,25 @@ const menuItems: MenuItem[] = [
     title: "آمار ها",
     icon: BarChart3,
     subItems: [
-      { title: "آمار مشتریان", href: "/dashboard/statistics/customers" },
-      { title: "آمار سفارشات", href: "/dashboard/statistics/orders" },
-      { title: "آمار فروشندگان", href: "/dashboard/statistics/sellers" },
+      // آمار مشتریان
+      { title: "مشتریان آنلاین", href: "/dashboard/statistics/customers" },
+      { title: "مشتریان غیرفعال", href: "/dashboard/statistics/customers/inactive" },
+      { title: "مشتریان بدون خرید", href: "/dashboard/statistics/customers/without-purchase" },
+      { title: "بدهی واقعی مشتریان", href: "/dashboard/statistics/customers/actual-debt" },
+      // آمار فروشندگان
+      { title: "گزارش فروشندگان", href: "/dashboard/statistics/sellers" },
+      // آمار محصولات
+      { title: "خلاصه محصولات", href: "/dashboard/statistics/products/summary" },
+      { title: "آمار دوره‌ای محصولات", href: "/dashboard/statistics/products/period" },
+      { title: "موجودی منفی", href: "/dashboard/statistics/products/negative-inventory" },
+      { title: "محصولات مرجوعی", href: "/dashboard/statistics/products/returned" },
+      // آمار سفارشات
+      { title: "سفارشات مرجوعی", href: "/dashboard/statistics/orders/returned" },
+      // آمار فروش
+      { title: "فروش دسته‌بندی‌ها", href: "/dashboard/statistics/sales/categories" },
+      { title: "روزهای خرید", href: "/dashboard/statistics/sales/day-of-purchase" },
+      // آمار پرداخت‌ها
+      { title: "وضعیت پرداخت‌ها", href: "/dashboard/statistics/payments/status" },
     ],
   },
 ];

@@ -2,13 +2,21 @@
 
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
-import { Archive, BellPlus, Edit, Eye } from "lucide-react";
+import { Archive, BellPlus, Edit, Eye, Printer } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Pagination,
   PaginationContent,
@@ -32,6 +40,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { QueryOrder } from "@/lib/api/types";
+import { ordersApi } from "@/lib/api/orders";
 import {
   useCapillarySalesLines,
   useCustomers,
@@ -88,6 +97,13 @@ export default function OrdersPage() {
     "page-size": 20,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
+  const [invoiceDialogOpen, setInvoiceDialogOpen] = React.useState(false);
+  const [selectedOrderId, setSelectedOrderId] = React.useState<string | null>(
+    null
+  );
+  const [downloadingType, setDownloadingType] = React.useState<
+    "customer-invoice" | "warehouse-receipt" | "proforma-invoice" | null
+  >(null);
 
   const pageSize = filters["page-size"] || 20;
 
@@ -127,6 +143,98 @@ export default function OrdersPage() {
 
   const handleViewOrder = (orderId: string) => {
     router.push(`/dashboard/orders/${orderId}`);
+  };
+
+  const handleOpenInvoiceDialog = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setInvoiceDialogOpen(true);
+  };
+
+  const handleDownloadCustomerInvoice = async () => {
+    if (!selectedOrderId) return;
+
+    setDownloadingType("customer-invoice");
+    try {
+      const blob = await ordersApi.getCustomerInvoice(selectedOrderId);
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `customer-invoice-${selectedOrderId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("فاکتور مشتری با موفقیت دانلود شد");
+      setInvoiceDialogOpen(false);
+      setSelectedOrderId(null);
+    } catch (error) {
+      toast.error("خطا در دریافت فاکتور مشتری", {
+        description: "لطفا دوباره تلاش کنید",
+      });
+    } finally {
+      setDownloadingType(null);
+    }
+  };
+
+  const handleDownloadWarehouseReceipt = async () => {
+    if (!selectedOrderId) return;
+
+    setDownloadingType("warehouse-receipt");
+    try {
+      const blob = await ordersApi.getWarehouseReceipt(selectedOrderId);
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `warehouse-receipt-${selectedOrderId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("حواله انبار با موفقیت دانلود شد");
+      setInvoiceDialogOpen(false);
+      setSelectedOrderId(null);
+    } catch (error) {
+      toast.error("خطا در دریافت حواله انبار", {
+        description: "لطفا دوباره تلاش کنید",
+      });
+    } finally {
+      setDownloadingType(null);
+    }
+  };
+
+  const handleDownloadProformaInvoice = async () => {
+    if (!selectedOrderId) return;
+
+    setDownloadingType("proforma-invoice");
+    try {
+      const blob = await ordersApi.getProformaInvoice(selectedOrderId);
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `proforma-invoice-${selectedOrderId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("پیش فاکتور با موفقیت دانلود شد");
+      setInvoiceDialogOpen(false);
+      setSelectedOrderId(null);
+    } catch (error) {
+      toast.error("خطا در دریافت پیش فاکتور", {
+        description: "لطفا دوباره تلاش کنید",
+      });
+    } finally {
+      setDownloadingType(null);
+    }
   };
 
   if (isLoading && !orders) {
@@ -333,6 +441,22 @@ export default function OrdersPage() {
                             <p>آرشیو سفارش</p>
                           </TooltipContent>
                         </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleOpenInvoiceDialog(order.id)}
+                              className="h-8 w-8"
+                            >
+                              <Printer className="size-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>صدور فاکتور</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -426,6 +550,70 @@ export default function OrdersPage() {
           </Pagination>
         </div>
       )}
+
+      {/* Invoice Dialog */}
+      <Dialog
+        open={invoiceDialogOpen}
+        onOpenChange={(open) => {
+          setInvoiceDialogOpen(open);
+          if (!open) {
+            setSelectedOrderId(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>صدور اسناد سفارش</DialogTitle>
+            <DialogDescription>
+              یکی از گزینه‌های زیر را برای دانلود انتخاب کنید
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            <Button
+              className="w-full justify-start"
+              variant="outline"
+              onClick={handleDownloadCustomerInvoice}
+              disabled={downloadingType !== null}
+            >
+              {downloadingType === "customer-invoice"
+                ? "در حال دانلود..."
+                : "فاکتور مشتری"}
+            </Button>
+            <Button
+              className="w-full justify-start"
+              variant="outline"
+              onClick={handleDownloadWarehouseReceipt}
+              disabled={downloadingType !== null}
+            >
+              {downloadingType === "warehouse-receipt"
+                ? "در حال دانلود..."
+                : "حواله انبار"}
+            </Button>
+            <Button
+              className="w-full justify-start"
+              variant="outline"
+              onClick={handleDownloadProformaInvoice}
+              disabled={downloadingType !== null}
+            >
+              {downloadingType === "proforma-invoice"
+                ? "در حال دانلود..."
+                : "پیش فاکتور"}
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setInvoiceDialogOpen(false);
+                setSelectedOrderId(null);
+              }}
+              disabled={downloadingType !== null}
+            >
+              بستن
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

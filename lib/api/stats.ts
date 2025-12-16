@@ -1,8 +1,21 @@
 import { apiClient } from "./client";
 import type {
+  GetActualCustomerDebtReportResponse,
+  GetCategorySalesReportResponse,
+  GetCustomersWithoutPurchaseReportResponse,
+  GetDayOfPurchasesResponse,
   GetHeadCategorySalesResponse,
+  GetInactiveCustomersReportResponse,
+  GetNegativeInventoryReportResponse,
+  GetOnlineCustomersReportResponse,
+  GetPaymentsStatusResponse,
   GetProductKardexResponse,
+  GetProductsPeriodReportResponse,
   GetProductsSalesResponse,
+  GetProductsSummaryReportResponse,
+  GetReturnedOrdersReportResponse,
+  GetReturnedProductsReportResponse,
+  GetSellersReportResponse,
   GetTopProductsSalesResponse,
   QueryProductKardex,
   QueryStats,
@@ -167,6 +180,280 @@ export const statsApi = {
     const queryString = params.toString();
     return apiClient.get<GetProductKardexResponse>(
       `/stats/product-kardex${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getCustomerStats(
+    query: QueryStats
+  ): Promise<GetOnlineCustomersReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.customer_id) {
+      params.append("customer_id", query.customer_id);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetOnlineCustomersReportResponse>(
+      `/stats/online-customers${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getCategorySalesReport(
+    query: QueryStats
+  ): Promise<GetCategorySalesReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetCategorySalesReportResponse>(
+      `/stats/category-sales-report${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getPaymentStatusReport(
+    query: QueryStats
+  ): Promise<GetPaymentsStatusResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.customer_id) {
+      params.append("customer_id", query.customer_id);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetPaymentsStatusResponse>(
+      `/stats/payments-status${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getDayOfPurchaseReport(
+    query: QueryStats
+  ): Promise<GetDayOfPurchasesResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetDayOfPurchasesResponse>(
+      `/stats/day-of-purchases${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getSellersReport(query: QueryStats): Promise<GetSellersReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetSellersReportResponse>(
+      `/stats/seller-report${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getNegativeInventoryReport(
+    query: QueryStats
+  ): Promise<GetNegativeInventoryReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetNegativeInventoryReportResponse>(
+      `/stats/negative-inventory${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getActualCustomerDebtReport(
+    query: QueryStats
+  ): Promise<GetActualCustomerDebtReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.customer_id) {
+      params.append("customer_id", query.customer_id);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetActualCustomerDebtReportResponse>(
+      `/stats/actual-customer-debt${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getReturnedOrdersReport(
+    query: QueryStats
+  ): Promise<GetReturnedOrdersReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetReturnedOrdersReportResponse>(
+      `/stats/returned-orders${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getReturnedProductsReport(
+    query: QueryStats
+  ): Promise<GetReturnedProductsReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetReturnedProductsReportResponse>(
+      `/stats/returned-products${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getInactiveCustomersReport(
+    query: QueryStats
+  ): Promise<GetInactiveCustomersReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetInactiveCustomersReportResponse>(
+      `/stats/inactive-customers${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getCustomersWithoutPurchaseReport(
+    query: QueryStats
+  ): Promise<GetCustomersWithoutPurchaseReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetCustomersWithoutPurchaseReportResponse>(
+      `/stats/customers-without-purchase${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getProductsSummaryReport(
+    query: QueryStats
+  ): Promise<GetProductsSummaryReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetProductsSummaryReportResponse>(
+      `/stats/products-summary${queryString ? `?${queryString}` : ""}`
+    );
+  },
+  async getProductsPeriodReport(
+    query: QueryStats
+  ): Promise<GetProductsPeriodReportResponse> {
+    const params = new URLSearchParams();
+    if (query?.period !== undefined) {
+      params.append("period", query.period);
+    }
+    if (query?.seller_id) {
+      params.append("seller_id", query.seller_id);
+    }
+    if (query?.from) {
+      params.append("from", formatDateForAPI(query.from));
+    }
+    if (query?.to) {
+      params.append("to", formatDateForAPI(query.to));
+    }
+    const queryString = params.toString();
+    return apiClient.get<GetProductsPeriodReportResponse>(
+      `/stats/products-period${queryString ? `?${queryString}` : ""}`
     );
   },
 };

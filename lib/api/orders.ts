@@ -81,4 +81,58 @@ export const ordersApi = {
     const endpoint = `/orders/${id}`;
     return apiClient.get<GetOrderResponse>(endpoint);
   },
+  async getCustomerInvoice(orderId: string): Promise<Blob> {
+    const endpoint = `/orders/customer-invoice/${orderId}`;
+    const cleanEndpoint = endpoint.startsWith("/")
+      ? endpoint.slice(1)
+      : endpoint;
+    const url = `/api/proxy/${cleanEndpoint}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "same-origin",
+    });
+
+    if (!response.ok) {
+      throw new Error("خطا در دریافت فاکتور");
+    }
+
+    return await response.blob();
+  },
+  async getWarehouseReceipt(orderId: string): Promise<Blob> {
+    const endpoint = `/orders/warehouse-receipt/${orderId}`;
+    const cleanEndpoint = endpoint.startsWith("/")
+      ? endpoint.slice(1)
+      : endpoint;
+    const url = `/api/proxy/${cleanEndpoint}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "same-origin",
+    });
+
+    if (!response.ok) {
+      throw new Error("خطا در دریافت حواله انبار");
+    }
+
+    return await response.blob();
+  },
+  async getProformaInvoice(orderId: string): Promise<Blob> {
+    const endpoint = `/orders/proforma/${orderId}`;
+    const cleanEndpoint = endpoint.startsWith("/")
+      ? endpoint.slice(1)
+      : endpoint;
+    const url = `/api/proxy/${cleanEndpoint}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "same-origin",
+    });
+
+    if (!response.ok) {
+      throw new Error("خطا در دریافت پیش فاکتور");
+    }
+
+    return await response.blob();
+  },
 };

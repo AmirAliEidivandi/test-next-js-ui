@@ -136,42 +136,48 @@ export interface GetDayOfPurchasesResponse {
 }
 
 export interface GetSellersReportResponse {
-  seller_id: string;
-  seller_name: string;
-  total_calls: number;
-  successful_calls: number;
-  failed_calls: number;
-  successful_orders: number;
-  failed_orders: number;
-  delivered_orders: number;
-  failed_orders_reasons: {
-    reason: string;
-    count: number;
+  report: {
+    seller_id: string;
+    seller_name: string;
+    total_calls: number;
+    successful_calls: number;
+    failed_calls: number;
+    successful_orders: number;
+    failed_orders: number;
+    delivered_orders: number;
+    failed_order_reasons: {
+      reason: string;
+      count: number;
+    }[];
+    total_sales_amount: number;
+    average_order_amount: number;
+    highest_order_amount: number;
+    lowest_order_amount: number;
+    conversion_rate: number;
+    finalization_rate: number;
+    total_weight_sold: number;
+    average_weight_per_order: number;
+    unique_customers: number;
+    new_customers: number;
+    returning_customers: number;
+    total_product_items: number;
+    top_products: {
+      product_title: string;
+      total_weight: number;
+      total_amount: number;
+      order_count: number;
+    }[];
+    top_categories: {
+      category_title: string;
+      total_weight: number;
+      total_amount: number;
+    }[];
+    performance_score: number;
   }[];
-  total_sales_amount: number;
-  average_order_amount: number;
-  highest_order_amount: number;
-  lowest_order_amount: number;
-  conversion_rate: number;
-  finalization_rate: number;
-  total_weight_sold: number;
-  average_weight_per_order: number;
-  unique_customers: number;
-  new_customers: number;
-  returning_customers: number;
-  total_products_items: number;
-  top_products: {
-    product_title: string;
-    total_weight: number;
-    total_amount: number;
-    order_count: number;
-  }[];
-  top_categories: {
-    category_title: string;
-    total_weight: number;
-    total_amount: number;
-  }[];
-  performance_score: number;
+  generated_at: string;
+  filters: {
+    period: PeriodEnum;
+  };
 }
 
 export interface GetNegativeInventoryReportResponse {
@@ -453,6 +459,86 @@ export interface GetProductsPeriodReportResponse {
   has_previous_page: boolean;
   generated_at: string;
   branch: string;
+}
+
+export enum PeriodEnum {
+  TODAY = "TODAY",
+  YESTERDAY = "YESTERDAY",
+  LAST_WEEK = "LAST_WEEK",
+  LAST_MONTH = "LAST_MONTH",
+  ALL = "ALL",
+}
+
+export interface GetOnlineCustomersReportResponse {
+  summary: {
+    total_customers_in_branch: number;
+    total_online_customers: number;
+    total_offline_customers: number;
+    online_customers_in_period: number;
+    registration_breakdown: {
+      total_registered: number;
+      with_purchases: number;
+      without_purchases: number;
+      active_customers: number;
+      inactive_customers: number;
+    };
+    financial_summary: {
+      total_purchase_amount: number;
+      total_debt: number;
+      avg_customer_value: number;
+    };
+    order_statistics: {
+      total_orders: number;
+      successful_orders: number;
+      failed_orders: number;
+      avg_conversion_rate: number;
+    };
+    mobile_verification: { verified: number; not_verified: number };
+    top_5_customers: {
+      customer_title: string;
+      customer_code: number;
+      total_purchase_amount: number;
+      successful_orders: number;
+    }[];
+    top_5_debtors: {
+      customer_title: string;
+      customer_code: number;
+      debt: number;
+      mobile: string;
+    }[];
+  };
+  report: {
+    customer_id: string;
+    customer_code: number;
+    customer_title: string;
+    customer_type: string;
+    customer_category: string;
+    mobile: string;
+    mobile_verified: boolean;
+    full_name: string;
+    registration_date: string;
+    days_since_registration: number;
+    total_orders: number;
+    successful_orders: number;
+    failed_orders: number;
+    conversion_rate: number;
+    total_purchase_amount: number;
+    avg_order_value: number;
+    wallet_balance: number;
+    credit_cap: number;
+    debt: number;
+    last_order_date: string;
+    days_since_last_order: number;
+    is_active: boolean;
+    status: string;
+  }[];
+  generated_at: string;
+  branch: string;
+  filters: {
+    period: PeriodEnum;
+    from?: Date;
+    to?: Date;
+  };
 }
 
 // sellers list response
@@ -740,6 +826,36 @@ export interface GetCustomersResponse {
     representative_name: string; // نماینده ی مشتری
     is_online: boolean;
   }>;
+}
+
+export interface GetCustomerResponse {
+  id: string;
+  title: string;
+  type: CustomerTypeEnum;
+  category: CustomerCategoryEnum;
+  phone: string;
+  code: number;
+  hp_code: number;
+  capillary_sales_line: {
+    id: string;
+    line_number: number;
+    title: string;
+  };
+  seller: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+  wallet: {
+    id: string;
+    balance: number;
+  };
+  representative_name: string;
+  is_online: boolean;
 }
 
 export interface CapillarySalesLinesResponse {
