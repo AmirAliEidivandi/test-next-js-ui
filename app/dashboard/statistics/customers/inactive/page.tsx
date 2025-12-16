@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -50,12 +51,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { useSellers } from "@/lib/hooks/api/use-employees";
-import {
-  useInactiveCustomers,
-} from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
+import { useInactiveCustomers } from "@/lib/hooks/api/use-stats";
 import { cn } from "@/lib/utils";
 
 const periodLabels: Record<PeriodEnum, string> = {
@@ -108,19 +106,25 @@ const riskLevelColors: Record<string, string> = {
 
 export default function InactiveCustomersPage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedSellerId, setSelectedSellerId] = React.useState<
     string | undefined
   >(undefined);
 
   const { data: sellers } = useSellers();
-  const { data: stats, isLoading, error, refetch } = useInactiveCustomers(filters);
+  const {
+    data: stats,
+    isLoading,
+    error,
+    refetch,
+  } = useInactiveCustomers(filters);
 
   React.useEffect(() => {
     if (error) {
@@ -145,10 +149,10 @@ export default function InactiveCustomersPage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setFilterDialogOpen(false);
@@ -218,7 +222,9 @@ export default function InactiveCustomersPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {toPersianDigits(formatPrice(stats.summary.total_inactive_customers))}
+              {toPersianDigits(
+                formatPrice(stats.summary.total_inactive_customers)
+              )}
             </div>
           </CardContent>
         </Card>
@@ -281,19 +287,25 @@ export default function InactiveCustomersPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm">ریسک بالا</span>
                 <Badge variant="destructive">
-                  {toPersianDigits(formatPrice(stats.summary.risk_breakdown.high))}
+                  {toPersianDigits(
+                    formatPrice(stats.summary.risk_breakdown.high)
+                  )}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">ریسک متوسط</span>
                 <Badge variant="default">
-                  {toPersianDigits(formatPrice(stats.summary.risk_breakdown.medium))}
+                  {toPersianDigits(
+                    formatPrice(stats.summary.risk_breakdown.medium)
+                  )}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">ریسک پایین</span>
                 <Badge variant="secondary">
-                  {toPersianDigits(formatPrice(stats.summary.risk_breakdown.low))}
+                  {toPersianDigits(
+                    formatPrice(stats.summary.risk_breakdown.low)
+                  )}
                 </Badge>
               </div>
             </div>
@@ -303,34 +315,42 @@ export default function InactiveCustomersPage() {
         <Card>
           <CardHeader>
             <CardTitle>۵ مشتری باارزش</CardTitle>
-            <CardDescription>مشتریان با بیشترین خرید که غیرفعال شده‌اند</CardDescription>
+            <CardDescription>
+              مشتریان با بیشترین خرید که غیرفعال شده‌اند
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {stats.summary.top_5_valuable_customers.length > 0 ? (
-                stats.summary.top_5_valuable_customers.map((customer, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 border rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary font-semibold">
-                        {toPersianDigits((index + 1).toString())}
+                stats.summary.top_5_valuable_customers.map(
+                  (customer, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary font-semibold">
+                          {toPersianDigits((index + 1).toString())}
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {customer.customer_title}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {toPersianDigits(customer.days_inactive.toString())}{" "}
+                            روز غیرفعال
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{customer.customer_title}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {toPersianDigits(customer.days_inactive.toString())} روز غیرفعال
+                      <div className="text-left">
+                        <p className="font-semibold">
+                          {toPersianDigits(formatPrice(customer.total_spent))}{" "}
+                          ریال
                         </p>
                       </div>
                     </div>
-                    <div className="text-left">
-                      <p className="font-semibold">
-                        {toPersianDigits(formatPrice(customer.total_spent))} ریال
-                      </p>
-                    </div>
-                  </div>
-                ))
+                  )
+                )
               ) : (
                 <p className="text-center text-muted-foreground py-8">
                   داده‌ای یافت نشد
@@ -346,7 +366,8 @@ export default function InactiveCustomersPage() {
         <CardHeader>
           <CardTitle>گزارش کامل مشتریان غیرفعال</CardTitle>
           <CardDescription>
-            لیست کامل مشتریان غیرفعال ({toPersianDigits(stats.report.length.toString())} مشتری)
+            لیست کامل مشتریان غیرفعال (
+            {toPersianDigits(stats.report.length.toString())} مشتری)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -373,7 +394,9 @@ export default function InactiveCustomersPage() {
                   stats.report.map((customer) => (
                     <TableRow key={customer.customer_id}>
                       <TableCell className="font-medium">
-                        {toPersianDigits(customer.customer_code?.toString() || "-")}
+                        {toPersianDigits(
+                          customer.customer_code?.toString() || "-"
+                        )}
                       </TableCell>
                       <TableCell className="font-medium">
                         {customer.customer_title || "-"}
@@ -385,10 +408,12 @@ export default function InactiveCustomersPage() {
                         {toPersianDigits(customer.total_purchases.toString())}
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(customer.total_spent))} ریال
+                        {toPersianDigits(formatPrice(customer.total_spent))}{" "}
+                        ریال
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(customer.avg_order_value))} ریال
+                        {toPersianDigits(formatPrice(customer.avg_order_value))}{" "}
+                        ریال
                       </TableCell>
                       <TableCell>
                         {formatDate(customer.first_purchase_date)}
@@ -397,7 +422,10 @@ export default function InactiveCustomersPage() {
                         {formatDate(customer.last_purchase_date)}
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(customer.days_since_last_purchase.toString())} روز
+                        {toPersianDigits(
+                          customer.days_since_last_purchase.toString()
+                        )}{" "}
+                        روز
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -407,8 +435,9 @@ export default function InactiveCustomersPage() {
                             ] as any
                           }
                         >
-                          {riskLevelLabels[customer.risk_level?.toLowerCase() || "low"] ||
-                            customer.risk_level}
+                          {riskLevelLabels[
+                            customer.risk_level?.toLowerCase() || "low"
+                          ] || customer.risk_level}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -473,7 +502,11 @@ export default function InactiveCustomersPage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -546,4 +579,3 @@ export default function InactiveCustomersPage() {
     </div>
   );
 }
-

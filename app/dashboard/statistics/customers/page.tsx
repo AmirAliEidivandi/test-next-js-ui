@@ -66,7 +66,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCustomers } from "@/lib/hooks/api/use-customers";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useCustomerStats } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
@@ -115,13 +115,13 @@ const formatPercentage = (value: number | undefined | null): string => {
 
 export default function CustomerStatisticsPage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
   const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+    React.useState<PeriodEnum>(PeriodEnum.LAST_MONTH);
   const [selectedCustomerId, setSelectedCustomerId] = React.useState<
     string | undefined
   >(undefined);
@@ -160,7 +160,7 @@ export default function CustomerStatisticsPage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedCustomerId(undefined);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
@@ -508,7 +508,7 @@ export default function CustomerStatisticsPage() {
                       cy="50%"
                       labelLine={false}
                       label={({ name, percent }) =>
-                        `${name}: ${(percent * 100).toFixed(0)}%`
+                        `${name}: ${(percent ?? 0 * 100).toFixed(0)}%`
                       }
                       outerRadius={80}
                       fill="#8884d8"
@@ -553,7 +553,7 @@ export default function CustomerStatisticsPage() {
                       cy="50%"
                       labelLine={false}
                       label={({ name, percent }) =>
-                        `${name}: ${(percent * 100).toFixed(0)}%`
+                        `${name}: ${(percent ?? 0 * 100).toFixed(0)}%`
                       }
                       outerRadius={80}
                       fill="#8884d8"

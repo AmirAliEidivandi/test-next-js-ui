@@ -2,11 +2,7 @@
 
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
-import {
-  CalendarIcon,
-  Filter,
-  Package,
-} from "lucide-react";
+import { CalendarIcon, Filter } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -27,6 +23,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -38,6 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -46,19 +52,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useProductsSummary } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 const periodLabels: Record<PeriodEnum, string> = {
@@ -99,20 +95,26 @@ const formatDate = (date?: Date | string) => {
 
 export default function ProductsSummaryPage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedSellerId, setSelectedSellerId] = React.useState<
     string | undefined
   >(undefined);
   const [currentPage, setCurrentPage] = React.useState(1);
 
   const { data: sellers } = useSellers();
-  const { data: stats, isLoading, error, refetch } = useProductsSummary(filters);
+  const {
+    data: stats,
+    isLoading,
+    error,
+    refetch,
+  } = useProductsSummary(filters);
 
   React.useEffect(() => {
     if (error) {
@@ -138,10 +140,10 @@ export default function ProductsSummaryPage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setCurrentPage(1);
@@ -179,9 +181,7 @@ export default function ProductsSummaryPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            خلاصه محصولات
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight">خلاصه محصولات</h2>
           <p className="text-sm text-muted-foreground">
             گزارش جامع محصولات شامل ورود، خروج، تولید و موجودی
           </p>
@@ -256,7 +256,9 @@ export default function ProductsSummaryPage() {
                   <TableHead className="text-right">وزن خروج</TableHead>
                   <TableHead className="text-right">مبلغ خروج</TableHead>
                   <TableHead className="text-right">موجودی انبار</TableHead>
-                  <TableHead className="text-right">موجودی محاسبه شده</TableHead>
+                  <TableHead className="text-right">
+                    موجودی محاسبه شده
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -297,7 +299,9 @@ export default function ProductsSummaryPage() {
                         کیلوگرم
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(item.calculated_remaining))}{" "}
+                        {toPersianDigits(
+                          formatPrice(item.calculated_remaining)
+                        )}{" "}
                         کیلوگرم
                       </TableCell>
                     </TableRow>
@@ -438,7 +442,11 @@ export default function ProductsSummaryPage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -511,4 +519,3 @@ export default function ProductsSummaryPage() {
     </div>
   );
 }
-

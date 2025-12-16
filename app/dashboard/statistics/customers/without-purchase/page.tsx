@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -50,10 +51,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useCustomersWithoutPurchase } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 const periodLabels: Record<PeriodEnum, string> = {
@@ -94,20 +94,25 @@ const formatDate = (date?: Date | string) => {
 
 export default function CustomersWithoutPurchasePage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedSellerId, setSelectedSellerId] = React.useState<
     string | undefined
   >(undefined);
 
   const { data: sellers } = useSellers();
-  const { data: stats, isLoading, error, refetch } =
-    useCustomersWithoutPurchase(filters);
+  const {
+    data: stats,
+    isLoading,
+    error,
+    refetch,
+  } = useCustomersWithoutPurchase(filters);
 
   React.useEffect(() => {
     if (error) {
@@ -132,10 +137,10 @@ export default function CustomersWithoutPurchasePage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setFilterDialogOpen(false);
@@ -235,7 +240,9 @@ export default function CustomersWithoutPurchasePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {toPersianDigits(formatPrice(stats.summary.contacted_no_purchase))}
+              {toPersianDigits(
+                formatPrice(stats.summary.contacted_no_purchase)
+              )}
             </div>
           </CardContent>
         </Card>
@@ -473,7 +480,11 @@ export default function CustomersWithoutPurchasePage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -546,4 +557,3 @@ export default function CustomersWithoutPurchasePage() {
     </div>
   );
 }
-

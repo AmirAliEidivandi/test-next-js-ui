@@ -2,13 +2,7 @@
 
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
-import {
-  BarChart3,
-  CalendarIcon,
-  Filter,
-  Package,
-  TrendingUp,
-} from "lucide-react";
+import { CalendarIcon, Filter } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -45,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -53,10 +48,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useCategorySales } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
@@ -88,13 +82,14 @@ const formatPrice = (price: number | undefined | null): string => {
 
 export default function CategorySalesPage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedSellerId, setSelectedSellerId] = React.useState<
     string | undefined
   >(undefined);
@@ -125,21 +120,22 @@ export default function CategorySalesPage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setFilterDialogOpen(false);
     refetch();
   };
 
-  const chartData = stats?.data.map((item) => ({
-    name: item.title,
-    amount: item.total_sales_amount,
-    weight: item.total_sales_weight,
-  })) || [];
+  const chartData =
+    stats?.data.map((item) => ({
+      name: item.title,
+      amount: item.total_sales_amount,
+      weight: item.total_sales_weight,
+    })) || [];
 
   if (isLoading && !stats) {
     return (
@@ -242,7 +238,9 @@ export default function CategorySalesPage() {
                 {stats.data.length > 0 ? (
                   stats.data.map((item, index) => (
                     <TableRow key={index}>
-                      <TableCell className="font-medium">{item.title}</TableCell>
+                      <TableCell className="font-medium">
+                        {item.title}
+                      </TableCell>
                       <TableCell>
                         {toPersianDigits(formatPrice(item.total_sales_weight))}{" "}
                         کیلوگرم
@@ -258,11 +256,15 @@ export default function CategorySalesPage() {
                         {toPersianDigits(item.products_with_sales.toString())}
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(item.average_sales_weight))}{" "}
+                        {toPersianDigits(
+                          formatPrice(item.average_sales_weight)
+                        )}{" "}
                         کیلوگرم
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(item.average_sales_amount))}{" "}
+                        {toPersianDigits(
+                          formatPrice(item.average_sales_amount)
+                        )}{" "}
                         ریال
                       </TableCell>
                     </TableRow>
@@ -327,7 +329,11 @@ export default function CategorySalesPage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -410,4 +416,3 @@ function formatDate(date?: Date | string) {
     })
   );
 }
-

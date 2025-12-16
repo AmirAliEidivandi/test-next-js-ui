@@ -41,6 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -49,10 +50,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useReturnedOrders } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 const periodLabels: Record<PeriodEnum, string> = {
@@ -113,13 +113,14 @@ const stepLabels: Record<string, string> = {
 
 export default function ReturnedOrdersPage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedSellerId, setSelectedSellerId] = React.useState<
     string | undefined
   >(undefined);
@@ -150,10 +151,10 @@ export default function ReturnedOrdersPage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setFilterDialogOpen(false);
@@ -228,9 +229,7 @@ export default function ReturnedOrdersPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              مرجوعی کامل
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">مرجوعی کامل</CardTitle>
             <RotateCcw className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -242,14 +241,14 @@ export default function ReturnedOrdersPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              مرجوعی جزئی
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">مرجوعی جزئی</CardTitle>
             <RotateCcw className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">
-              {toPersianDigits(formatPrice(stats.summary.partially_returned_count))}
+              {toPersianDigits(
+                formatPrice(stats.summary.partially_returned_count)
+              )}
             </div>
           </CardContent>
         </Card>
@@ -261,7 +260,9 @@ export default function ReturnedOrdersPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {toPersianDigits(formatPrice(stats.summary.total_returned_weight))}{" "}
+              {toPersianDigits(
+                formatPrice(stats.summary.total_returned_weight)
+              )}{" "}
               کیلوگرم
             </div>
           </CardContent>
@@ -269,12 +270,16 @@ export default function ReturnedOrdersPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">کل مبلغ مرجوعی</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              کل مبلغ مرجوعی
+            </CardTitle>
             <RotateCcw className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-destructive">
-              {toPersianDigits(formatPrice(stats.summary.total_returned_amount))}{" "}
+              {toPersianDigits(
+                formatPrice(stats.summary.total_returned_amount)
+              )}{" "}
               ریال
             </div>
           </CardContent>
@@ -300,7 +305,8 @@ export default function ReturnedOrdersPage() {
         <CardHeader>
           <CardTitle>گزارش کامل سفارشات مرجوعی</CardTitle>
           <CardDescription>
-            لیست کامل سفارشات مرجوعی ({toPersianDigits(stats.report.length.toString())} سفارش)
+            لیست کامل سفارشات مرجوعی (
+            {toPersianDigits(stats.report.length.toString())} سفارش)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -340,22 +346,30 @@ export default function ReturnedOrdersPage() {
                       <TableCell>{formatDate(order.created_date)}</TableCell>
                       <TableCell>{formatDate(order.delivery_date)}</TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(order.total_ordered_weight))}{" "}
+                        {toPersianDigits(
+                          formatPrice(order.total_ordered_weight)
+                        )}{" "}
                         کیلوگرم
                       </TableCell>
                       <TableCell className="text-destructive">
-                        {toPersianDigits(formatPrice(order.total_returned_weight))}{" "}
+                        {toPersianDigits(
+                          formatPrice(order.total_returned_weight)
+                        )}{" "}
                         کیلوگرم
                       </TableCell>
                       <TableCell className="text-destructive font-semibold">
-                        {toPersianDigits(formatPrice(order.total_returned_amount))}{" "}
+                        {toPersianDigits(
+                          formatPrice(order.total_returned_amount)
+                        )}{" "}
                         ریال
                       </TableCell>
                       <TableCell>
                         {formatPercentage(order.return_percentage)}
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(order.returned_products_count.toString())}
+                        {toPersianDigits(
+                          order.returned_products_count.toString()
+                        )}
                       </TableCell>
                     </TableRow>
                   ))
@@ -419,7 +433,11 @@ export default function ReturnedOrdersPage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -492,4 +510,3 @@ export default function ReturnedOrdersPage() {
     </div>
   );
 }
-

@@ -2,16 +2,10 @@
 
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
-import {
-  CalendarIcon,
-  CreditCard,
-  Filter,
-  Users,
-} from "lucide-react";
+import { CalendarIcon, CreditCard, Filter, Users } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -40,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -48,11 +43,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { QueryStats } from "@/lib/api/types";
+import { PeriodEnum } from "@/lib/api/types";
 import { useCustomers } from "@/lib/hooks/api/use-customers";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useActualCustomerDebt } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 const periodLabels: Record<PeriodEnum, string> = {
@@ -93,13 +88,14 @@ const formatDate = (date?: Date | string) => {
 
 export default function ActualCustomerDebtPage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedCustomerId, setSelectedCustomerId] = React.useState<
     string | undefined
   >(undefined);
@@ -109,7 +105,12 @@ export default function ActualCustomerDebtPage() {
 
   const { data: customers } = useCustomers({ "page-size": 200 });
   const { data: sellers } = useSellers();
-  const { data: stats, isLoading, error, refetch } = useActualCustomerDebt(filters);
+  const {
+    data: stats,
+    isLoading,
+    error,
+    refetch,
+  } = useActualCustomerDebt(filters);
 
   React.useEffect(() => {
     if (error) {
@@ -135,11 +136,11 @@ export default function ActualCustomerDebtPage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedCustomerId(undefined);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setFilterDialogOpen(false);
@@ -202,9 +203,7 @@ export default function ActualCustomerDebtPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              کل مشتریان
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">کل مشتریان</CardTitle>
             <Users className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -216,9 +215,7 @@ export default function ActualCustomerDebtPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              بدهی حسابداری
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">بدهی حسابداری</CardTitle>
             <CreditCard className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -246,9 +243,7 @@ export default function ActualCustomerDebtPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              بدهی واقعی کل
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">بدهی واقعی کل</CardTitle>
             <CreditCard className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -265,7 +260,8 @@ export default function ActualCustomerDebtPage() {
         <CardHeader>
           <CardTitle>گزارش کامل بدهی مشتریان</CardTitle>
           <CardDescription>
-            لیست کامل بدهی مشتریان ({toPersianDigits(stats.report.length.toString())} مشتری)
+            لیست کامل بدهی مشتریان (
+            {toPersianDigits(stats.report.length.toString())} مشتری)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -291,17 +287,28 @@ export default function ActualCustomerDebtPage() {
                       <TableCell className="font-medium">
                         {customer.customer_title}
                       </TableCell>
-                      <TableCell className={customer.accounting_debt > 0 ? "text-destructive" : ""}>
-                        {toPersianDigits(formatPrice(customer.accounting_debt))} ریال
+                      <TableCell
+                        className={
+                          customer.accounting_debt > 0 ? "text-destructive" : ""
+                        }
+                      >
+                        {toPersianDigits(formatPrice(customer.accounting_debt))}{" "}
+                        ریال
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(customer.pending_cheques_count.toString())}
+                        {toPersianDigits(
+                          customer.pending_cheques_count.toString()
+                        )}
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(customer.pending_cheques_total))} ریال
+                        {toPersianDigits(
+                          formatPrice(customer.pending_cheques_total)
+                        )}{" "}
+                        ریال
                       </TableCell>
                       <TableCell className="font-semibold text-destructive">
-                        {toPersianDigits(formatPrice(customer.actual_debt))} ریال
+                        {toPersianDigits(formatPrice(customer.actual_debt))}{" "}
+                        ریال
                       </TableCell>
                     </TableRow>
                   ))
@@ -365,7 +372,11 @@ export default function ActualCustomerDebtPage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -420,7 +431,8 @@ export default function ActualCustomerDebtPage() {
                   <SelectItem value="all">همه</SelectItem>
                   {customers?.data.map((customer) => (
                     <SelectItem key={customer.id} value={customer.id}>
-                      {customer.title} ({toPersianDigits(customer.code.toString())})
+                      {customer.title} (
+                      {toPersianDigits(customer.code.toString())})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -460,4 +472,3 @@ export default function ActualCustomerDebtPage() {
     </div>
   );
 }
-

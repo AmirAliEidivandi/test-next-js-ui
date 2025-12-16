@@ -2,12 +2,7 @@
 
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
-import {
-  CalendarIcon,
-  Filter,
-  Package,
-  RotateCcw,
-} from "lucide-react";
+import { CalendarIcon, Filter, Package, RotateCcw } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -39,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -47,10 +43,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useReturnedProducts } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 const periodLabels: Record<PeriodEnum, string> = {
@@ -98,19 +93,25 @@ const formatPercentage = (value: number | undefined | null): string => {
 
 export default function ReturnedProductsPage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedSellerId, setSelectedSellerId] = React.useState<
     string | undefined
   >(undefined);
 
   const { data: sellers } = useSellers();
-  const { data: stats, isLoading, error, refetch } = useReturnedProducts(filters);
+  const {
+    data: stats,
+    isLoading,
+    error,
+    refetch,
+  } = useReturnedProducts(filters);
 
   React.useEffect(() => {
     if (error) {
@@ -135,10 +136,10 @@ export default function ReturnedProductsPage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setFilterDialogOpen(false);
@@ -208,7 +209,9 @@ export default function ReturnedProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {toPersianDigits(formatPrice(stats.summary.total_unique_products))}
+              {toPersianDigits(
+                formatPrice(stats.summary.total_unique_products)
+              )}
             </div>
           </CardContent>
         </Card>
@@ -222,7 +225,9 @@ export default function ReturnedProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {toPersianDigits(formatPrice(stats.summary.total_return_incidents))}
+              {toPersianDigits(
+                formatPrice(stats.summary.total_return_incidents)
+              )}
             </div>
           </CardContent>
         </Card>
@@ -234,7 +239,9 @@ export default function ReturnedProductsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {toPersianDigits(formatPrice(stats.summary.total_returned_weight))}{" "}
+              {toPersianDigits(
+                formatPrice(stats.summary.total_returned_weight)
+              )}{" "}
               کیلوگرم
             </div>
           </CardContent>
@@ -242,12 +249,16 @@ export default function ReturnedProductsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">کل مبلغ مرجوعی</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              کل مبلغ مرجوعی
+            </CardTitle>
             <RotateCcw className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-destructive">
-              {toPersianDigits(formatPrice(stats.summary.total_returned_amount))}{" "}
+              {toPersianDigits(
+                formatPrice(stats.summary.total_returned_amount)
+              )}{" "}
               ریال
             </div>
           </CardContent>
@@ -310,7 +321,8 @@ export default function ReturnedProductsPage() {
         <CardHeader>
           <CardTitle>گزارش کامل محصولات مرجوعی</CardTitle>
           <CardDescription>
-            لیست کامل محصولات مرجوعی ({toPersianDigits(stats.report.length.toString())} محصول)
+            لیست کامل محصولات مرجوعی (
+            {toPersianDigits(stats.report.length.toString())} محصول)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -327,8 +339,12 @@ export default function ReturnedProductsPage() {
                   <TableHead className="text-right">وزن تحویل</TableHead>
                   <TableHead className="text-right">مبلغ مرجوعی</TableHead>
                   <TableHead className="text-right">درصد مرجوعی</TableHead>
-                  <TableHead className="text-right">سفارشات تاثیرپذیر</TableHead>
-                  <TableHead className="text-right">مشتریان تاثیرپذیر</TableHead>
+                  <TableHead className="text-right">
+                    سفارشات تاثیرپذیر
+                  </TableHead>
+                  <TableHead className="text-right">
+                    مشتریان تاثیرپذیر
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -346,29 +362,41 @@ export default function ReturnedProductsPage() {
                         {toPersianDigits(product.total_return_count.toString())}
                       </TableCell>
                       <TableCell className="text-destructive">
-                        {toPersianDigits(formatPrice(product.total_returned_weight))}{" "}
+                        {toPersianDigits(
+                          formatPrice(product.total_returned_weight)
+                        )}{" "}
                         کیلوگرم
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(product.total_ordered_weight))}{" "}
+                        {toPersianDigits(
+                          formatPrice(product.total_ordered_weight)
+                        )}{" "}
                         کیلوگرم
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(formatPrice(product.total_fulfilled_weight))}{" "}
+                        {toPersianDigits(
+                          formatPrice(product.total_fulfilled_weight)
+                        )}{" "}
                         کیلوگرم
                       </TableCell>
                       <TableCell className="text-destructive font-semibold">
-                        {toPersianDigits(formatPrice(product.total_returned_amount))}{" "}
+                        {toPersianDigits(
+                          formatPrice(product.total_returned_amount)
+                        )}{" "}
                         ریال
                       </TableCell>
                       <TableCell>
                         {formatPercentage(product.return_percentage)}
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(product.affected_orders_count.toString())}
+                        {toPersianDigits(
+                          product.affected_orders_count.toString()
+                        )}
                       </TableCell>
                       <TableCell>
-                        {toPersianDigits(product.affected_customers_count.toString())}
+                        {toPersianDigits(
+                          product.affected_customers_count.toString()
+                        )}
                       </TableCell>
                     </TableRow>
                   ))
@@ -432,7 +460,11 @@ export default function ReturnedProductsPage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -505,4 +537,3 @@ export default function ReturnedProductsPage() {
     </div>
   );
 }
-

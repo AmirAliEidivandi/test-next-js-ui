@@ -2,11 +2,7 @@
 
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
-import {
-  CalendarIcon,
-  CreditCard,
-  Filter,
-} from "lucide-react";
+import { CalendarIcon, Filter } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -44,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -52,11 +49,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { useCustomers } from "@/lib/hooks/api/use-customers";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { usePaymentStatus } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
@@ -83,13 +79,14 @@ const COLORS = ["#22c55e", "#ef4444", "#f59e0b"];
 
 export default function PaymentStatusPage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedCustomerId, setSelectedCustomerId] = React.useState<
     string | undefined
   >(undefined);
@@ -125,22 +122,23 @@ export default function PaymentStatusPage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedCustomerId(undefined);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setFilterDialogOpen(false);
     refetch();
   };
 
-  const chartData = stats?.data.map((item, index) => ({
-    name: item.title,
-    value: item.count,
-    fill: COLORS[index % COLORS.length],
-  })) || [];
+  const chartData =
+    stats?.data.map((item, index) => ({
+      name: item.title,
+      value: item.count,
+      fill: COLORS[index % COLORS.length],
+    })) || [];
 
   if (isLoading && !stats) {
     return (
@@ -172,9 +170,7 @@ export default function PaymentStatusPage() {
           <h2 className="text-2xl font-bold tracking-tight">
             آمار وضعیت پرداخت‌ها
           </h2>
-          <p className="text-sm text-muted-foreground">
-            گزارش وضعیت پرداخت‌ها
-          </p>
+          <p className="text-sm text-muted-foreground">گزارش وضعیت پرداخت‌ها</p>
         </div>
         <Button variant="outline" onClick={() => setFilterDialogOpen(true)}>
           <Filter className="size-4 ml-2" />
@@ -199,9 +195,7 @@ export default function PaymentStatusPage() {
         <Card>
           <CardHeader>
             <CardTitle>نمودار وضعیت پرداخت‌ها</CardTitle>
-            <CardDescription>
-              توزیع پرداخت‌ها بر اساس وضعیت
-            </CardDescription>
+            <CardDescription>توزیع پرداخت‌ها بر اساس وضعیت</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -220,7 +214,7 @@ export default function PaymentStatusPage() {
                     cy="50%"
                     labelLine={false}
                     label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
+                      `${name}: ${(percent ?? 0 * 100).toFixed(0)}%`
                     }
                     outerRadius={120}
                     fill="#8884d8"
@@ -242,9 +236,7 @@ export default function PaymentStatusPage() {
       <Card>
         <CardHeader>
           <CardTitle>گزارش کامل وضعیت پرداخت‌ها</CardTitle>
-          <CardDescription>
-            لیست کامل وضعیت‌های پرداخت
-          </CardDescription>
+          <CardDescription>لیست کامل وضعیت‌های پرداخت</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -337,7 +329,11 @@ export default function PaymentStatusPage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -392,7 +388,8 @@ export default function PaymentStatusPage() {
                   <SelectItem value="all">همه</SelectItem>
                   {customers?.data.map((customer) => (
                     <SelectItem key={customer.id} value={customer.id}>
-                      {customer.title} ({toPersianDigits(customer.code.toString())})
+                      {customer.title} (
+                      {toPersianDigits(customer.code.toString())})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -449,4 +446,3 @@ function formatPrice(price: number | undefined | null): string {
   }
   return price.toLocaleString("fa-IR", { useGrouping: true });
 }
-

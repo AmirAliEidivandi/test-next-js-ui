@@ -2,11 +2,7 @@
 
 import { format } from "date-fns-jalali";
 import { faIR } from "date-fns-jalali/locale/fa-IR";
-import {
-  BarChart3,
-  CalendarIcon,
-  Filter,
-} from "lucide-react";
+import { CalendarIcon, Filter } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -43,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -51,10 +48,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PeriodEnum, type QueryStats } from "@/lib/api/types";
 import { useSellers } from "@/lib/hooks/api/use-employees";
 import { useDayOfPurchase } from "@/lib/hooks/api/use-stats";
-import type { PeriodEnum, QueryStats } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
@@ -86,13 +82,13 @@ const dayLabels: Record<string, string> = {
   friday: "جمعه",
   saturday: "شنبه",
   // Fallback for Persian names if API returns them
-  "شنبه": "شنبه",
-  "یکشنبه": "یکشنبه",
-  "دوشنبه": "دوشنبه",
-  "سه‌شنبه": "سه‌شنبه",
-  "چهارشنبه": "چهارشنبه",
-  "پنجشنبه": "پنجشنبه",
-  "جمعه": "جمعه",
+  شنبه: "شنبه",
+  یکشنبه: "یکشنبه",
+  دوشنبه: "دوشنبه",
+  سه‌شنبه: "سه‌شنبه",
+  چهارشنبه: "چهارشنبه",
+  پنجشنبه: "پنجشنبه",
+  جمعه: "جمعه",
 };
 
 // ترتیب روزهای هفته به سبک ایرانی (شنبه تا جمعه)
@@ -105,24 +101,25 @@ const dayOrder: Record<string, number> = {
   thursday: 6, // پنجشنبه
   friday: 7, // جمعه
   // Fallback for Persian names
-  "شنبه": 1,
-  "یکشنبه": 2,
-  "دوشنبه": 3,
-  "سه‌شنبه": 4,
-  "چهارشنبه": 5,
-  "پنجشنبه": 6,
-  "جمعه": 7,
+  شنبه: 1,
+  یکشنبه: 2,
+  دوشنبه: 3,
+  سه‌شنبه: 4,
+  چهارشنبه: 5,
+  پنجشنبه: 6,
+  جمعه: 7,
 };
 
 export default function DayOfPurchasePage() {
   const [filters, setFilters] = React.useState<QueryStats>({
-    period: "LAST_MONTH",
+    period: PeriodEnum.LAST_MONTH,
   });
   const [filterDialogOpen, setFilterDialogOpen] = React.useState(false);
   const [fromDate, setFromDate] = React.useState<Date | undefined>(undefined);
   const [toDate, setToDate] = React.useState<Date | undefined>(undefined);
-  const [selectedPeriod, setSelectedPeriod] =
-    React.useState<PeriodEnum>("LAST_MONTH");
+  const [selectedPeriod, setSelectedPeriod] = React.useState<PeriodEnum>(
+    PeriodEnum.LAST_MONTH
+  );
   const [selectedSellerId, setSelectedSellerId] = React.useState<
     string | undefined
   >(undefined);
@@ -153,10 +150,10 @@ export default function DayOfPurchasePage() {
   const handleClearFilters = () => {
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedPeriod("LAST_MONTH");
+    setSelectedPeriod(PeriodEnum.LAST_MONTH);
     setSelectedSellerId(undefined);
     const newFilters: QueryStats = {
-      period: "LAST_MONTH",
+      period: PeriodEnum.LAST_MONTH,
     };
     setFilters(newFilters);
     setFilterDialogOpen(false);
@@ -234,9 +231,7 @@ export default function DayOfPurchasePage() {
         <Card>
           <CardHeader>
             <CardTitle>نمودار خریدها بر اساس روز</CardTitle>
-            <CardDescription>
-              توزیع خریدها در روزهای مختلف هفته
-            </CardDescription>
+            <CardDescription>توزیع خریدها در روزهای مختلف هفته</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -264,9 +259,7 @@ export default function DayOfPurchasePage() {
       <Card>
         <CardHeader>
           <CardTitle>گزارش کامل روزهای خرید</CardTitle>
-          <CardDescription>
-            لیست کامل روزهای هفته با تعداد خرید
-          </CardDescription>
+          <CardDescription>لیست کامل روزهای هفته با تعداد خرید</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -349,7 +342,11 @@ export default function DayOfPurchasePage() {
                       )}
                     >
                       <CalendarIcon className="ml-2 size-4" />
-                      {fromDate ? formatDate(fromDate) : <span>انتخاب تاریخ</span>}
+                      {fromDate ? (
+                        formatDate(fromDate)
+                      ) : (
+                        <span>انتخاب تاریخ</span>
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -439,4 +436,3 @@ function formatPrice(price: number | undefined | null): string {
   }
   return price.toLocaleString("fa-IR", { useGrouping: true });
 }
-
