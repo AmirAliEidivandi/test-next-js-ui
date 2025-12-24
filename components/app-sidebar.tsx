@@ -180,6 +180,14 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
+    title: "مدیریت کاربران",
+    icon: Users,
+    subItems: [
+      { title: "کاربران", href: "/dashboard/users-management/users" },
+      { title: "کارمندان", href: "/dashboard/users-management/employees" },
+    ],
+  },
+  {
     title: "آمار ها",
     icon: BarChart3,
     subItems: [

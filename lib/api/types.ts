@@ -1229,6 +1229,7 @@ export enum PaymentMethodEnum {
 export enum CustomerRequestStatusEnum {
   PENDING = "PENDING", // درحال انتظار
   CONVERTED_TO_ORDER = "CONVERTED_TO_ORDER", // تبدیل به سفارش
+  PROCESSING = "PROCESSING", // آماده سازی
   APPROVED = "APPROVED", // تایید شده
   REJECTED = "REJECTED", // رد شده
   CANCELLED = "CANCELLED", // لغو شده
@@ -2878,4 +2879,444 @@ export interface GetOrderHistoryResponse {
       email: string;
     };
   };
+}
+
+export enum GenderEnum {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+}
+
+export interface QueryProfile {
+  page?: number;
+  "page-size"?: number;
+  enabled?: boolean;
+  mobile?: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+  gender?: GenderEnum;
+  created_at_min?: Date;
+  created_at_max?: Date;
+}
+
+export interface CreateProfileDto {
+  first_name: string;
+  last_name: string;
+  email: string;
+  gender: GenderEnum;
+  mobile: string;
+  groups: string[];
+  enabled: boolean;
+  birth_date?: string;
+  national_code?: string;
+  username?: string;
+  capillary_sales_line_ids?: string[];
+}
+
+export interface GetGroupsResponse {
+  data: {
+    id: string;
+    name: string;
+    path: string;
+    attributes: {
+      client: string[];
+    };
+    clientRoles: Record<string, string[]>;
+    roles: { id: string; name: string }[];
+    clientId: string;
+  }[];
+  success: boolean;
+  msg: string;
+  count: number;
+}
+
+export interface UpdateEmployeeProfileRequest {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  gender?: GenderEnum;
+  mobile?: string;
+  groups?: string[];
+  enabled?: boolean;
+  birth_date?: string;
+  national_code?: string;
+  username?: string;
+  capillary_sales_line_ids?: string[];
+}
+
+export interface GetProfilesResponse {
+  data: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    enabled: boolean;
+    mobile: string;
+    username: string;
+  }[];
+  count: number;
+  msg: string;
+  success: boolean;
+}
+
+export interface GetProfileResponse {
+  count: number;
+  data: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    enabled: boolean;
+    mobile: string;
+    mobile_prefix: string;
+    mobile_country_code: string;
+    mobile_verified: boolean;
+    username: string;
+    birth_date: Date;
+    national_code: string;
+    gender: GenderEnum;
+    groups: {
+      id: string;
+      name: string;
+      path: string;
+    }[];
+    person: {
+      id: string;
+      title: string;
+    };
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+    clients: string[];
+    roles: {
+      id: string;
+      name: string;
+      client_id: string;
+    }[];
+    third_party_provider: string | null;
+    is_verified_via_third_party: boolean | null;
+  }[];
+  msg: string;
+  success: boolean;
+}
+
+export interface GetEmployeesProfileResponse {
+  count: number;
+  data: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    enabled: boolean;
+    mobile: string;
+    mobile_prefix: string;
+    mobile_country_code: string;
+    mobile_verified: boolean;
+    username: string;
+    birth_date: Date;
+    national_code: string;
+    gender: GenderEnum;
+    groups: {
+      id: string;
+      name: string;
+      path: string;
+    }[];
+    employee: {
+      id: string;
+      created_at: Date;
+      kid: string;
+      locked: boolean;
+      roles: string[];
+      updated_at: Date;
+      deleted_at: Date | null;
+      deleted: boolean;
+    };
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
+    clients: string[];
+    roles: {
+      id: string;
+      name: string;
+      client_id: string;
+    }[];
+    third_party_provider: string | null;
+    is_verified_via_third_party: boolean | null;
+  }[];
+  msg: string;
+  success: boolean;
+}
+
+export interface GetWithdrawalRequestsResponse {
+  data: {
+    id: string;
+    created_at: Date;
+    status: WithdrawalRequestStatusEnum;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+    };
+    amount: number;
+  }[];
+  count: number;
+}
+
+export enum WithdrawalRequestStatusEnum {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  REVIEWING = "REVIEWING",
+  PROCESSING = "PROCESSING",
+}
+
+export interface GetWithdrawalRequestDetailsResponse {
+  id: string;
+  created_at: Date;
+  status: WithdrawalRequestStatusEnum;
+  customer: {
+    id: string;
+    title: string;
+    code: number;
+  };
+  amount: number;
+  representative_name: string;
+  person: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+      mobile: string;
+      username: string;
+    };
+  };
+  requested_at: Date;
+  reviewed_at: Date;
+  reject_reason: string;
+  bank_card: {
+    id: string;
+    is_verified: boolean;
+    bank_name: string;
+  };
+  reviewed_by_employee: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+      mobile: string;
+      username: string;
+    };
+  };
+  processed_by_employee: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+      mobile: string;
+      username: string;
+    };
+  };
+}
+
+export interface QueryWithdrawalRequestDto {
+  page?: number;
+  "page-size"?: number;
+  customer_id?: string;
+  status?: WithdrawalRequestStatusEnum;
+}
+
+export enum CreatedTypeEnum {
+  CUSTOMER = "CUSTOMER",
+  EMPLOYEE = "EMPLOYEE",
+}
+
+export interface QueryBankCardsDto {
+  page?: number;
+  "page-size"?: number;
+  person_id?: string;
+  created_type?: CreatedTypeEnum;
+  employee_id?: string;
+  customer_id?: string;
+}
+
+export interface BankCardsResponse {
+  data: {
+    id: string;
+    is_verified: boolean;
+    bank_name: string;
+    iban: string;
+    masked_pan: string;
+    created_at: Date;
+    person: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+        mobile: string;
+        username: string;
+      };
+    } | null;
+    account_number: string;
+    created_type: CreatedTypeEnum;
+    employee: {
+      id: string;
+      profile: {
+        id: string;
+        kid: string;
+        first_name: string;
+        last_name: string;
+        mobile: string;
+        username: string;
+      };
+    } | null;
+    customer: {
+      id: string;
+      title: string;
+      code: number;
+    } | null;
+  }[];
+  count: number;
+}
+
+export interface BankCardDetailsResponse {
+  id: string;
+  is_verified: boolean;
+  bank_name: string;
+  iban: string;
+  masked_pan: string;
+  created_at: Date;
+  person: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+      mobile: string;
+      username: string;
+    };
+  } | null;
+  account_number: string;
+  created_type: CreatedTypeEnum;
+  employee: {
+    id: string;
+    profile: {
+      id: string;
+      kid: string;
+      first_name: string;
+      last_name: string;
+      mobile: string;
+      username: string;
+    };
+  } | null;
+  customer: {
+    id: string;
+    title: string;
+    code: number;
+  } | null;
+}
+
+export enum InventoryAdjustmentTypeEnum {
+  SURPLUS = "SURPLUS",
+  SHORTAGE = "SHORTAGE",
+}
+
+export enum InventoryAdjustmentReasonEnum {
+  SCALE_CALIBRATION_ERROR = "SCALE_CALIBRATION_ERROR",
+  WEIGHING_ERROR = "WEIGHING_ERROR",
+  DATA_ENTRY_ERROR = "DATA_ENTRY_ERROR",
+  OPERATIONAL_HANDLING_ERROR = "OPERATIONAL_HANDLING_ERROR",
+  NATURAL_SHRINKAGE = "NATURAL_SHRINKAGE",
+  SPOilage = "SPOILAGE",
+  LOSS = "LOSS",
+  THEFT = "THEFT",
+  SYSTEM_MISCOUNT = "SYSTEM_MISCOUNT",
+  DUPLICATE_RECORD = "DUPLICATE_RECORD",
+  STOCKTAKING_ADJUSTMENT = "STOCKTAKING_ADJUSTMENT",
+  MANAGEMENT_CORRECTION = "MANAGEMENT_CORRECTION",
+  OTHER = "OTHER",
+}
+export enum InventoryAdjustmentStatusEnum {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+}
+
+export interface GetInventoryAdjustmentListResponse {
+  data: {
+    items_count: number;
+    type: InventoryAdjustmentTypeEnum;
+    date: Date;
+    reason: InventoryAdjustmentReasonEnum;
+    id: string;
+    created_at: Date;
+    code: number;
+    status: InventoryAdjustmentStatusEnum;
+  }[];
+  count: number;
+}
+
+export interface GetInventoryAdjustmentDetailsResponse {
+  id: string;
+  type: InventoryAdjustmentTypeEnum;
+  date: Date;
+  reason: InventoryAdjustmentReasonEnum;
+  code: number;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  created_at: Date;
+  items: {
+    product_id: string;
+    product_title: string;
+    product_code: number;
+    expected_net_weight: number;
+    expected_gross_weight: number;
+    diff_net_weight: number;
+    actual_net_weight: number;
+    actual_gross_weight: number;
+    diff_gross_weight: number;
+    actual_sec_unit_amount: number;
+    diff_sec_unit_amount: number;
+    expected_sec_unit_amount: number;
+  }[];
+  created_by: {
+    id: string;
+    profile: {
+      id: string;
+      first_name: string;
+      last_name: string;
+    };
+  };
+  approved_at: Date | null;
+  approved_by: {
+    id: string;
+    profile: {
+      id: string;
+      first_name: string;
+      last_name: string;
+    };
+  } | null;
+  warehouse: {
+    id: string;
+    name: string;
+  };
+  description: string | null;
+  reference: string | null;
+  updated_at: Date;
+  items_count: number;
+}
+
+export interface QueryInventoryAdjustmentDto {
+  page?: number;
+  "page-size"?: number;
+  warehouse_id?: string;
+  date?: Date;
+  reason?: InventoryAdjustmentReasonEnum;
+  status?: InventoryAdjustmentStatusEnum;
 }

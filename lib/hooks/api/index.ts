@@ -8,6 +8,7 @@ export * from "./use-follow-ups";
 export * from "./use-invoices";
 export * from "./use-orders";
 export * from "./use-products";
+export * from "./use-profiles";
 export * from "./use-reminders";
 export * from "./use-return-requests";
 export * from "./use-tickets";

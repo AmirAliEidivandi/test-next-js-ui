@@ -55,6 +55,7 @@ const statusLabels: Record<
   REJECTED: "رد شده",
   CANCELLED: "لغو شده",
   DELIVERED: "تحویل شده",
+  PROCESSING: "آماده سازی",
 };
 
 const toPersianDigits = (value: string) =>

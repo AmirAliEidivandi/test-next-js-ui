@@ -39,6 +39,9 @@ const getPageTitle = (pathname: string): string => {
     "/dashboard/logs": "لاگ ها و رهگیری",
     "/dashboard/checks": "چک ها",
     "/dashboard/reminders": "یادآور ها",
+    "/dashboard/users-management/users": "لیست کاربران",
+    "/dashboard/users-management/employees": "لیست کارمندان",
+    "/dashboard/users-management/employees/create": "ایجاد کارمند",
     "/dashboard/production/produces": "لیست تولیدات",
     // آمار مشتریان
     "/dashboard/statistics/customers": "مشتریان آنلاین",
@@ -76,6 +79,18 @@ const getPageTitle = (pathname: string): string => {
   }
   if (pathname.startsWith("/dashboard/wallets/") && pathname !== "/dashboard/wallets" && pathname !== "/dashboard/wallets/history") {
     return "جزئیات کیف پول";
+  }
+  if (pathname.startsWith("/dashboard/users-management/users/") && pathname !== "/dashboard/users-management/users") {
+    return "جزئیات کاربر";
+  }
+  if (pathname.startsWith("/dashboard/users-management/employees/") && pathname !== "/dashboard/users-management/employees") {
+    if (pathname.includes("/edit")) {
+      return "ویرایش کارمند";
+    }
+    if (pathname.includes("/create")) {
+      return "ایجاد کارمند";
+    }
+    return "جزئیات کارمند";
   }
 
   return titleMap[pathname] || "پنل مدیریت";

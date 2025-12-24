@@ -86,6 +86,7 @@ const statusLabels: Record<CustomerRequestStatusEnum, string> = {
   REJECTED: "رد شده",
   CANCELLED: "لغو شده",
   DELIVERED: "تحویل شده",
+  PROCESSING: "آماده سازی",
 };
 
 const paymentMethodLabels: Record<PaymentMethodEnum, string> = {
