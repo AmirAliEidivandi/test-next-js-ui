@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { GenderEnum, QueryProfile } from "@/lib/api/types";
+import { GenderEnum, type QueryProfile } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 const pageSizeOptions = [10, 20, 30, 40, 50, 100];
@@ -40,8 +40,8 @@ const booleanOptions = [
 
 const genderOptions: { value: GenderEnum | "all"; label: string }[] = [
   { value: "all", label: "همه" },
-  { value: "MALE", label: "مرد" },
-  { value: "FEMALE", label: "زن" },
+  { value: GenderEnum.MALE, label: "مرد" },
+  { value: GenderEnum.FEMALE, label: "زن" },
 ];
 
 type ProfileFilterDialogProps = {
@@ -235,10 +235,8 @@ export function ProfileFilterDialog({
             </div>
 
             {/* Enabled */}
-            {renderBooleanSelect(
-              "وضعیت فعال",
-              localFilters.enabled,
-              (val) => setLocalFilters({ ...localFilters, enabled: val })
+            {renderBooleanSelect("وضعیت فعال", localFilters.enabled, (val) =>
+              setLocalFilters({ ...localFilters, enabled: val })
             )}
 
             {/* First Name */}
@@ -247,7 +245,10 @@ export function ProfileFilterDialog({
               <Input
                 value={localFilters.first_name || ""}
                 onChange={(e) =>
-                  setLocalFilters({ ...localFilters, first_name: e.target.value })
+                  setLocalFilters({
+                    ...localFilters,
+                    first_name: e.target.value,
+                  })
                 }
                 placeholder="نام"
               />
@@ -259,7 +260,10 @@ export function ProfileFilterDialog({
               <Input
                 value={localFilters.last_name || ""}
                 onChange={(e) =>
-                  setLocalFilters({ ...localFilters, last_name: e.target.value })
+                  setLocalFilters({
+                    ...localFilters,
+                    last_name: e.target.value,
+                  })
                 }
                 placeholder="نام خانوادگی"
               />
@@ -293,11 +297,7 @@ export function ProfileFilterDialog({
             <div className="space-y-2">
               <label className="text-sm font-medium">جنسیت</label>
               <Select
-                value={
-                  localFilters.gender
-                    ? localFilters.gender
-                    : "all"
-                }
+                value={localFilters.gender ? localFilters.gender : "all"}
                 onValueChange={(value) =>
                   setLocalFilters({
                     ...localFilters,
@@ -345,4 +345,3 @@ export function ProfileFilterDialog({
     </Dialog>
   );
 }
-
