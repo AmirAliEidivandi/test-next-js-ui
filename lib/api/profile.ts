@@ -1,7 +1,7 @@
 import { apiClient } from "./client";
 import type {
   CreateProfileDto,
-  GetEmployeesProfileResponse,
+  GetEmployeeProfileResponse,
   GetProfileInfoResponse,
   GetProfileResponse,
   GetProfilesResponse,
@@ -84,9 +84,7 @@ export const profileApi = {
   /**
    * get employees profile
    */
-  async getEmployeesProfile(
-    query: QueryProfile
-  ): Promise<GetEmployeesProfileResponse> {
+  async getEmployeesProfile(query: QueryProfile): Promise<GetProfilesResponse> {
     const params = new URLSearchParams();
 
     if (query.page) {
@@ -120,7 +118,7 @@ export const profileApi = {
       params.append("created_at_max", query.created_at_max.toISOString());
     }
     const queryString = params.toString();
-    return apiClient.get<GetEmployeesProfileResponse>(
+    return apiClient.get<GetProfilesResponse>(
       `/profiles/employees${queryString ? `?${queryString}` : ""}`
     );
   },
@@ -129,7 +127,15 @@ export const profileApi = {
    */
   async createProfile(
     request: CreateProfileDto
-  ): Promise<GetEmployeesProfileResponse> {
-    return apiClient.post<GetEmployeesProfileResponse>("/profiles", request);
+  ): Promise<GetEmployeeProfileResponse> {
+    return apiClient.post<GetEmployeeProfileResponse>("/profiles", request);
+  },
+  /**
+   * Get employee profile by id
+   */
+  async getEmployeeProfile(id: string): Promise<GetEmployeeProfileResponse> {
+    return apiClient.get<GetEmployeeProfileResponse>(
+      `/profiles/employees/${id}`
+    );
   },
 };

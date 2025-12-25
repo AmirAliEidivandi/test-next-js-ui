@@ -25,13 +25,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import type { CreateProfileDto } from "@/lib/api/types";
 import { GenderEnum } from "@/lib/api/types";
-import {
-  useCreateProfile,
-  useGroups,
-} from "@/lib/hooks/api/use-profiles";
+import { useCreateProfile, useGroups } from "@/lib/hooks/api/use-profiles";
+import { cn } from "@/lib/utils";
 
 const genderOptions: { value: GenderEnum; label: string }[] = [
   { value: GenderEnum.MALE, label: "مرد" },
@@ -47,7 +44,7 @@ export default function CreateEmployeePage() {
     first_name: "",
     last_name: "",
     email: "",
-    gender: "MALE",
+    gender: GenderEnum.MALE,
     mobile: "",
     groups: [],
     enabled: true,
@@ -67,9 +64,7 @@ export default function CreateEmployeePage() {
     try {
       const submitData: CreateProfileDto = {
         ...formData,
-        birth_date: birthDate
-          ? format(birthDate, "yyyy-MM-dd")
-          : undefined,
+        birth_date: birthDate ? format(birthDate, "yyyy-MM-dd") : undefined,
       };
 
       await createProfile.mutateAsync(submitData);
@@ -309,9 +304,7 @@ export default function CreateEmployeePage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">
-                گروهی یافت نشد
-              </p>
+              <p className="text-sm text-muted-foreground">گروهی یافت نشد</p>
             )}
           </div>
         </div>
@@ -333,4 +326,3 @@ export default function CreateEmployeePage() {
     </div>
   );
 }
-

@@ -11,11 +11,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export const profileKeys = {
   all: ["profiles"] as const,
   lists: () => [...profileKeys.all, "list"] as const,
-  list: (filters?: QueryProfile) =>
-    [...profileKeys.lists(), filters] as const,
+  list: (filters?: QueryProfile) => [...profileKeys.lists(), filters] as const,
   employeesList: (filters?: QueryProfile) =>
     [...profileKeys.all, "employees", "list", filters] as const,
   detail: (id: string) => [...profileKeys.all, "detail", id] as const,
+  employeeDetail: (id: string) =>
+    [...profileKeys.all, "employee", "detail", id] as const,
   groups: () => [...profileKeys.all, "groups"] as const,
 };
 
@@ -50,6 +51,14 @@ export function useProfile(id: string | null) {
     placeholderData: (previousData) => previousData,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+  });
+}
+
+export function useEmployeeProfile(id: string | null) {
+  return useQuery({
+    queryKey: profileKeys.employeeDetail(id!),
+    queryFn: () => profileApi.getEmployeeProfile(id!),
+    enabled: !!id,
   });
 }
 
@@ -96,4 +105,3 @@ export function useUpdateProfile() {
     },
   });
 }
-

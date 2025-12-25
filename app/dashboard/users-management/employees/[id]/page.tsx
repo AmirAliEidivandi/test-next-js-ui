@@ -16,8 +16,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProfile } from "@/lib/hooks/api/use-profiles";
 import type { GenderEnum } from "@/lib/api/types";
+import { useEmployeeProfile } from "@/lib/hooks/api/use-profiles";
 
 const genderLabels: Record<GenderEnum, string> = {
   MALE: "مرد",
@@ -44,7 +44,11 @@ export default function EmployeeDetailPage() {
   const router = useRouter();
   const profileId = params.id as string;
 
-  const { data: profileResponse, isLoading, error } = useProfile(profileId);
+  const {
+    data: profileResponse,
+    isLoading,
+    error,
+  } = useEmployeeProfile(profileId);
 
   const profile = profileResponse?.data?.[0];
 
@@ -110,12 +114,8 @@ export default function EmployeeDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            جزئیات کارمند
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            اطلاعات کامل کارمند
-          </p>
+          <h2 className="text-2xl font-bold tracking-tight">جزئیات کارمند</h2>
+          <p className="text-sm text-muted-foreground">اطلاعات کامل کارمند</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={handleEdit}>
@@ -142,9 +142,7 @@ export default function EmployeeDetailPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  نام
-                </p>
+                <p className="text-sm font-medium text-muted-foreground">نام</p>
                 <p className="text-base font-semibold">{profile.first_name}</p>
               </div>
               <div>
@@ -188,9 +186,7 @@ export default function EmployeeDetailPage() {
                   تاریخ تولد
                 </p>
                 <p className="text-base font-semibold">
-                  {profile.birth_date
-                    ? formatDate(profile.birth_date)
-                    : "-"}
+                  {profile.birth_date ? formatDate(profile.birth_date) : "-"}
                 </p>
               </div>
             </div>
@@ -303,4 +299,3 @@ export default function EmployeeDetailPage() {
     </div>
   );
 }
-

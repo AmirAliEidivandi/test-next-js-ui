@@ -2998,7 +2998,7 @@ export interface GetProfileResponse {
   success: boolean;
 }
 
-export interface GetEmployeesProfileResponse {
+export interface GetEmployeeProfileResponse {
   count: number;
   data: {
     id: string;
